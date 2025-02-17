@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 16 February 2025 at 11:32:22 am'!
+'From Cuis7.3 [latest update: #7044] on 16 February 2025 at 6:53:49 pm'!
 'Description '!
-!provides: 'Morf' 1 0!
+!provides: 'Morf' 1 11!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -66,7 +66,7 @@ RadioButtonGroupMorf class
 
 !classDefinition: #TextInputMorf category: 'Morf'!
 LayoutMorph subclass: #TextInputMorf
-	instanceVariableNames: 'label textModelMorph'
+	instanceVariableNames: 'inputWidth textModelMorph'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
@@ -84,6 +84,16 @@ LayoutMorph subclass: #Todo
 Todo class
 	instanceVariableNames: ''!
 
+!classDefinition: #TodosPane category: 'Morf'!
+LayoutMorph subclass: #TodosPane
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Morf'!
+!classDefinition: 'TodosPane class' category: 'Morf'!
+TodosPane class
+	instanceVariableNames: ''!
+
 !classDefinition: #Greeter category: 'Morf'!
 SystemWindow subclass: #Greeter
 	instanceVariableNames: 'selectedColor'
@@ -96,7 +106,7 @@ Greeter class
 
 !classDefinition: #TodoApp category: 'Morf'!
 SystemWindow subclass: #TodoApp
-	instanceVariableNames: 'scrollPane statusLabel todoEntry todos todosPane window titleLabelx'
+	instanceVariableNames: 'scrollPane statusLabel todoInput todos todosPane window titleLabelx'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
@@ -128,9 +138,14 @@ and make the LabelMorph visible with the new contents.
 Press the escape key to discard the changes, make the TextEntry2Morph invisible,
 and make the LabelMorph visible with the old contents.!
 
-!Todo commentStamp: 'RMV 8/18/2024 14:54:14' prior: 0!
-Instances of this class represent a todo item that has a text description and can be marked as done.
-Send #morph to get a morph that represents a todo item.!
+!Todo commentStamp: 'RMV 2/16/2025 18:47:39' prior: 0!
+Instances of this class represent a todo item that:
+- can be marked as done or not done by toggling a checkbox
+- has an editable text description
+- can be deleted by clicking a wastebasket button!
+
+!TodosPane commentStamp: 'RMV 2/16/2025 18:24:52' prior: 0!
+This is a column LayoutMorph that automatically adjusts its width to fill its owner morph.!
 
 !TodoApp commentStamp: 'RMV 8/18/2024 14:45:24' prior: 0!
 This is a basic todo application.
@@ -629,7 +644,7 @@ handlesMouseDown: aMouseEvent
 	
 	^ true! !
 
-!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/15/2025 15:25:00'!
+!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/16/2025 18:38:36'!
 initialize
 	
 	super initialize.
@@ -666,9 +681,9 @@ initialize
 	So the next line disables showing the context menu."
 	textInput editor class keyboardActions at: 27 + 1 put: #noop:.
 	
-	self addMorph: textInput.! !
+	self addMorph: textInput proportionalWidth: 1.! !
 
-!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/16/2025 10:33:46'!
+!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/16/2025 17:20:04'!
 mouseButton1Down: aMouseEvent localPosition: aPosition
 	
 	label visible ifTrue: [
@@ -743,25 +758,10 @@ contents: aString
 
 	textModelMorph editor actualContents: aString! !
 
-!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/15/2025 16:05:49'!
-label: labelString placeholder: phString
-	
-	labelString ifNotNil: [
-		label := LabelMorph contents: labelString, ':'.
-		self addMorph: label.
-		self separation: 10.
-	].
-	
-	self padding: 0. "must set AFTER separation"
+!TextInputMorf methodsFor: 'accessing' stamp: 'RMV 2/16/2025 16:14:03'!
+inputWidth: aNumber
 
-	textModelMorph := TextModelMorph withText: '' ::
-		askBeforeDiscardingEdits: false;
-		emptyTextDisplayMessage: phString;
-		hideScrollBarsIndefinitely;
-		tabToFocus: true;
-		wrapFlag: false.
-	
-	self addMorph: textModelMorph proportionalWidth: 1.! !
+	textModelMorph layoutSpec fixedWidth: aNumber! !
 
 !TextInputMorf methodsFor: 'events' stamp: 'RMV 2/12/2025 19:01:19'!
 keystrokeAction: aBlock
@@ -771,6 +771,14 @@ keystrokeAction: aBlock
 	textModelMorph keystrokeAction: aBlock
 
 ! !
+
+!TextInputMorf methodsFor: 'events' stamp: 'RMV 2/16/2025 16:35:46'!
+restoreCursor
+	"Place text cursor at end of text."
+	| index |
+
+	index := self contents size + 1.
+	textModelMorph selectFrom: index to: index.! !
 
 !TextInputMorf methodsFor: 'events' stamp: 'RMV 2/12/2025 19:01:26'!
 returnAction: aBlock
@@ -782,6 +790,33 @@ returnAction: aBlock
 	]
 
 ! !
+
+!TextInputMorf methodsFor: 'initialization' stamp: 'RMV 2/16/2025 16:21:20'!
+initialize
+
+	super initialize.
+	inputWidth := 200.
+	"self layoutSpec proportionalHeight: nil."
+! !
+
+!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/16/2025 16:48:43'!
+label: labelString placeholder: phString
+	
+	self layoutSpec proportionalHeight: nil.
+
+	labelString ifNotNil: [
+		self addMorph: (LabelMorph contents: labelString, ':').
+		self gap: 10.
+	].
+	
+	textModelMorph := TextModelMorph withText: '' ::
+		askBeforeDiscardingEdits: false;
+		emptyTextDisplayMessage: phString;
+		hideScrollBarsIndefinitely;
+		tabToFocus: true;
+		wrapFlag: false.
+	
+	self addMorph: textModelMorph proportionalWidth: 1.! !
 
 !TextInputMorf class methodsFor: 'instance creation' stamp: 'RMV 2/12/2025 19:03:54'!
 label: aString
@@ -816,17 +851,19 @@ text: aString
 	
 	label contents: aString! !
 
-!Todo methodsFor: 'events' stamp: 'RMV 2/15/2025 15:01:15'!
+!Todo methodsFor: 'events' stamp: 'RMV 2/16/2025 18:44:20'!
 onDelete: aBlock
+	"Register aBlock to be evaluated if the wastebasket button is clicked."
 	
 	onDelete := aBlock! !
 
-!Todo methodsFor: 'events' stamp: 'RMV 2/15/2025 15:01:09'!
+!Todo methodsFor: 'events' stamp: 'RMV 2/16/2025 18:43:54'!
 onDoneToggle: aBlock
+	"Register aBlock to be evaluated every time the checkbox state changes."
 	
 	onDoneToggle := aBlock! !
 
-!Todo methodsFor: 'initialization' stamp: 'RMV 2/15/2025 15:06:22'!
+!Todo methodsFor: 'initialization' stamp: 'RMV 2/16/2025 18:43:07'!
 initialize
 	| button buttonFont |
 	
@@ -834,13 +871,12 @@ initialize
 		
 	checkbox := CheckboxMorf label: nil.
 	checkbox onChange: [ :checked |
-		label color: (checked ifTrue: [ Color gray ] ifFalse: [ Color black ]).
-		label font: (checked ifTrue: [ labelFont struckThrough ] ifFalse: [ labelFont ]).
+		label color: (checked ifTrue: [ Color gray lighter ] ifFalse: [ Color black ]).
+		label font: (checked ifTrue: [ labelFont struckThrough ] ifFalse: labelFont).
 		onDoneToggle ifNotNil: [ onDoneToggle value: checked ]
 	].
 	
 	label := EditableLabelMorf new.
-	label layoutSpec proportionalWidth: 1.
 	labelFont := label font.
 	
 	"The Kurinto Sans font is the only one I've found so far
@@ -851,20 +887,20 @@ initialize
 	button := ButtonMorf
 		label: '🗑' "wastebasket Unicode character"
 		onClick: [ onDelete ifNotNil: [ onDelete value ] ].
-	button fillColor: Color transparent; textColor: Color red.
-	button font: buttonFont.
-		
-	self layoutSpec proportionalWidth: 1.
-	
+	button
+		fillColor: Color transparent;
+		font: buttonFont;
+		textColor: Color red.
+			
 	self
 		color: Color transparent;
 		gap: 10;
 		addMorph: checkbox;
-		addMorph: label;
+		addMorph: label proportionalWidth: 1;
 		addMorph: button.
  
 	"Center the submorphs vertically."
-	self submorphsDo: [:morph | morph layoutSpec offAxisEdgeWeight: 0.5]! !
+	self submorphsDo: [ :morph | morph layoutSpec offAxisEdgeWeight: #center ].! !
 
 !Todo class methodsFor: 'class initialization' stamp: 'RMV 2/14/2025 14:27:55'!
 initialize
@@ -879,7 +915,29 @@ text: aString
 		text: aString;
 		done: false! !
 
-!Greeter methodsFor: 'initialization' stamp: 'RMV 2/15/2025 14:36:47'!
+!TodosPane methodsFor: 'as yet unclassified' stamp: 'RMV 2/16/2025 18:28:50'!
+adjustExtent
+	"This is called repeatedly to adjust the width of this morph
+	to fill the width of is owner which is a PluggableScrollPane
+	created in the TodoApp initialize method.
+	The PluggableScrollPane method extentChanged:
+	calls this every time its extent changes.
+	This overrides the method in PlacedMorph which does nothing."
+	
+	owner ifNotNil: [ self morphWidth: owner viewableWidth ]! !
+
+!TodosPane methodsFor: 'as yet unclassified' stamp: 'RMV 2/16/2025 17:14:21'!
+initialize
+	
+	super initialize.
+	self adjustExtent.! !
+
+!TodosPane class methodsFor: 'as yet unclassified' stamp: 'RMV 2/16/2025 17:12:35'!
+new
+
+	^ self newColumn! !
+
+!Greeter methodsFor: 'initialization' stamp: 'RMV 2/16/2025 15:48:20'!
 initialize
 	| ageRow button1 button2 checkbox column greetingLabel moodLabel nameInput radioButtonGroup |
 	
@@ -917,8 +975,7 @@ initialize
 		values: { Color red. Color green. Color blue }.
 	radioButtonGroup onChange: [ :aColor | moodLabel color: aColor ].
 	
-	button1 := PluggableButtonMorph model: self action: #handleButtonClick.
-	button1 label: 'Click Me'.
+	button1 := PluggableButtonMorph model: self action: #handleButtonClick label: 'Click Me'.
 	
 	button2 := ButtonMorf label: 'Click Me' onClick: [ self handleButtonClick ].
 	button2 fillColor: Color yellow; hoverColor: Color green muchLighter; textColor: Color red.
@@ -970,9 +1027,24 @@ worldMenuOptions
 		} asDictionary
 	}`! !
 
-!TodoApp methodsFor: 'initialization' stamp: 'RMV 2/15/2025 16:16:57'!
+!TodoApp methodsFor: 'accessing' stamp: 'RMV 2/16/2025 18:46:15'!
+status
+	"Answer a string describing the status of the todos."
+	| remaining |
+	
+	"Count the todos that are not done."
+	remaining := todos
+		inject: 0
+		into: [ :acc :todo |
+			todo done ifTrue: acc ifFalse: acc + 1
+		].
+	
+	^ '{1} of {2} remaining' format: {remaining. todos size}.! !
+
+!TodoApp methodsFor: 'initialization' stamp: 'RMV 2/16/2025 18:53:45'!
 initialize
-	| button column lightBlue row |
+	"Build the user interface."
+	| addRow button column |
 	
 	super initialize.
 	self setLabel: 'Todo App'.
@@ -980,63 +1052,45 @@ initialize
 	statusLabel := LabelMorph new
 		color: Color gray.
 	
-	todoEntry := TextInputMorf label: nil.
-	todoEntry returnAction: [ self addTodoFromEntry ].
-	
+	"Build a row for adding new todos."
+	todoInput := TextInputMorf label: nil.
+	todoInput returnAction: [ self addTodoFromEntry ].
 	button := ButtonMorf label: 'Add' onClick: [ self addTodoFromEntry ].
-	
-	"TODO: Why does adding the todoEntry to this row
-	cause its height to grow to match the button height?
-	This happens even if todoEntry is a TextModelMorph instead of a TextInputMorf."
-	row := LayoutMorph newRow
+	addRow := LayoutMorph newRow
 		gap: 10;
-		addMorph: todoEntry proportionalWidth: 1;
+		addMorph: todoInput;
 		addMorph: button.
 	
-	todosPane := LayoutMorph newColumn.
+	"Build a scrollable list of todos."
+	todosPane := TodosPane new.
+	scrollPane := PluggableScrollPane new
+		hHideScrollBar;
+		scroller: todosPane.
+	scrollPane layoutSpec
+		proportionalWidth: 1;
+		proportionalHeight: 1 minimum: 100.
 
-	scrollPane := PluggableScrollPane new.
-	scrollPane layoutSpec proportionalWidth: 1.
-	scrollPane layoutSpec proportionalHeight: 1 minimum: 100.
-	scrollPane hHideScrollBar.
-	scrollPane scroller: todosPane.
-
+	"Create initial todos that will be available for testing."
 	todos := OrderedCollection new.
-	
-	"Add initial todos for testing."
 	#('buy milk' 'cut grass' 'ride bike' 'run' 'study Smalltalk') do: [ :text |
 		self addTodo: text atStart: false
 	].
 
+	"This must be done AFTER the initial todos are created."
 	statusLabel contents: self status.
 	
-	lightBlue := Color r: 0.450 g: 0.600 b: 0.850.
-	window := SystemWindow new
-		borderColor: lightBlue;
-		setLabel: 'Todo App'.
-
 	column := self layoutMorph.
 	column
-		padding: 10;
 		gap: 20;
+		padding: 10;
 		addMorph: statusLabel;
-		addMorph: row;
+		addMorph: addRow;
 		addMorph: scrollPane.
 	
-	column submorphsDo: [ :morph | morph layoutSpec offAxisEdgeWeight: 0 ].! !
+	"Left-align the status label."
+	statusLabel layoutSpec offAxisEdgeWeight: #columnLeft.! !
 
-!TodoApp methodsFor: 'accessing' stamp: 'RMV 2/15/2025 15:46:06'!
-status
-	| remaining |
-	
-	remaining := todos
-		inject: 0
-		into: [ :acc :todo |
-			todo done ifTrue: acc ifFalse: acc + 1
-		].
-	^ '{1} of {2} remaining' format: {remaining. todos size}.! !
-
-!TodoApp methodsFor: 'private' stamp: 'RMV 2/15/2025 14:23:37'!
+!TodoApp methodsFor: 'private' stamp: 'RMV 2/16/2025 16:41:28'!
 addTodo: aString atStart: aBoolean
 	| todo |
 	
@@ -1045,31 +1099,35 @@ addTodo: aString atStart: aBoolean
 		statusLabel contents: self status
 	].
 	todo onDelete: [
-		todos removeAllSuchThat: [:t | t text = todo text].
+		todos removeAllSuchThat: [ :t | t text = todo text ].
 		todosPane removeMorph: todo.
 		todosPane morphHeight: todosPane minimumExtent y.
 		statusLabel contents: self status.
 	].
 	todos add: todo.
+	
 	aBoolean
 		ifTrue: [ todosPane addMorphBack: todo ]
-		ifFalse: [ todosPane addMorph: todo ].
+		ifFalse: [ todosPane addMorph: todo proportionalWidth: 1 ].
+		
 	todosPane redrawNeeded.
 ! !
 
-!TodoApp methodsFor: 'private' stamp: 'RMV 2/15/2025 15:46:16'!
+!TodoApp methodsFor: 'private' stamp: 'RMV 2/16/2025 16:33:42'!
 addTodoFromEntry
 	| text |
 	
-	text := todoEntry contents.
+	text := todoInput contents.
 	text isEmpty ifFalse: [
 		self addTodo: text atStart: true.
-		todoEntry contents: ''.
-		todoEntry keyboardFocusChange: true
+		todoInput contents: ''.
+		"todoInput keyboardFocusChange: true"
+		todoInput restoreCursor.
 	]! !
 
-!TodoApp class methodsFor: 'instance creation' stamp: 'RMV 2/15/2025 14:23:22'!
+!TodoApp class methodsFor: 'instance creation' stamp: 'RMV 2/16/2025 18:48:33'!
 open
+	"Open a properly sized instance of this class in the World."
 	| extent instance |
 	
 	instance := self new.
