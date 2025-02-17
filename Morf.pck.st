@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 16 February 2025 at 6:53:49 pm'!
+'From Cuis7.3 [latest update: #7044] on 16 February 2025 at 6:58:32 pm'!
 'Description '!
-!provides: 'Morf' 1 11!
+!provides: 'Morf' 1 13!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -1041,7 +1041,7 @@ status
 	
 	^ '{1} of {2} remaining' format: {remaining. todos size}.! !
 
-!TodoApp methodsFor: 'initialization' stamp: 'RMV 2/16/2025 18:53:45'!
+!TodoApp methodsFor: 'initialization' stamp: 'RMV 2/16/2025 18:56:33'!
 initialize
 	"Build the user interface."
 	| addRow button column |
@@ -1077,7 +1077,7 @@ initialize
 	].
 
 	"This must be done AFTER the initial todos are created."
-	statusLabel contents: self status.
+	self updateStatus.
 	
 	column := self layoutMorph.
 	column
@@ -1090,40 +1090,47 @@ initialize
 	"Left-align the status label."
 	statusLabel layoutSpec offAxisEdgeWeight: #columnLeft.! !
 
-!TodoApp methodsFor: 'private' stamp: 'RMV 2/16/2025 16:41:28'!
+!TodoApp methodsFor: 'private' stamp: 'RMV 2/16/2025 18:58:02'!
 addTodo: aString atStart: aBoolean
 	| todo |
 	
 	todo := Todo text: aString.
-	todo onDoneToggle: [ :done |
-		statusLabel contents: self status
-	].
+	todo onDoneToggle: [ :done | self updateStatus ].
 	todo onDelete: [
 		todos removeAllSuchThat: [ :t | t text = todo text ].
 		todosPane removeMorph: todo.
 		todosPane morphHeight: todosPane minimumExtent y.
-		statusLabel contents: self status.
+		self updateStatus.
 	].
 	todos add: todo.
+	self updateStatus.
 	
 	aBoolean
 		ifTrue: [ todosPane addMorphBack: todo ]
-		ifFalse: [ todosPane addMorph: todo proportionalWidth: 1 ].
+		ifFalse: [ todosPane addMorph: todo ].
 		
 	todosPane redrawNeeded.
 ! !
 
-!TodoApp methodsFor: 'private' stamp: 'RMV 2/16/2025 16:33:42'!
+!TodoApp methodsFor: 'private' stamp: 'RMV 2/16/2025 18:55:13'!
 addTodoFromEntry
 	| text |
 	
 	text := todoInput contents.
 	text isEmpty ifFalse: [
 		self addTodo: text atStart: true.
+		
+		"Clear the text input for adding a new todo."
 		todoInput contents: ''.
 		"todoInput keyboardFocusChange: true"
 		todoInput restoreCursor.
 	]! !
+
+!TodoApp methodsFor: 'private' stamp: 'RMV 2/16/2025 18:55:52'!
+updateStatus
+
+	statusLabel contents: self status
+! !
 
 !TodoApp class methodsFor: 'instance creation' stamp: 'RMV 2/16/2025 18:48:33'!
 open
