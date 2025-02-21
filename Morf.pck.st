@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 20 February 2025 at 6:34:44 pm'!
+'From Cuis7.3 [latest update: #7044] on 20 February 2025 at 7:00:52 pm'!
 'Description '!
-!provides: 'Morf' 1 23!
+!provides: 'Morf' 1 26!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -499,6 +499,16 @@ label: aString value: anObject selected: aBoolean
 	^ self new label: aString value: anObject selected: aBoolean
 ! !
 
+!SwitchMorf methodsFor: 'accessing' stamp: 'RMV 2/20/2025 18:36:09'!
+borderColor
+	
+	^ borderColor! !
+
+!SwitchMorf methodsFor: 'accessing' stamp: 'RMV 2/20/2025 18:36:21'!
+borderColor: aColor
+	
+	borderColor := aColor! !
+
 !SwitchMorf methodsFor: 'accessing' stamp: 'RMV 2/20/2025 09:31:34'!
 checked
 	
@@ -520,23 +530,30 @@ thumbColor: aColor
 	
 	thumbColor := aColor! !
 
-!SwitchMorf methodsFor: 'drawing' stamp: 'RMV 2/20/2025 18:32:59'!
+!SwitchMorf methodsFor: 'drawing' stamp: 'RMV 2/20/2025 19:00:41'!
 drawOn: aCanvas
-	| diameter halfRadius halfStrokeWidth thumbCheckedX thumbUncheckedX radius strokeWidth x1 x2 y1 y2 |
+	| color diameter halfRadius halfStrokeWidth hoverColor
+	  radius strokeWidth thumbCheckedX thumbUncheckedX
+	  x1 x2 y1 y2 |
 		
 	diameter := height.
 	radius := diameter / 2.
 	halfRadius := radius / 2.
 	strokeWidth := height / 20.
 	halfStrokeWidth := strokeWidth / 2.
+	
+	hoverColor := borderColor muchDarker.
+	color := hovered ifTrue: hoverColor ifFalse: borderColor.
+
 	x1 := halfStrokeWidth + radius.
 	x2 := halfRadius + diameter.
 	y1 := halfStrokeWidth.
 	y2 := diameter - halfStrokeWidth.
+	
 	thumbUncheckedX := 	radius + halfStrokeWidth.
 	thumbCheckedX := thumbUncheckedX + radius + halfRadius - halfStrokeWidth.
 	
-	aCanvas strokeWidth: strokeWidth color: Color gray fillColor: Color white do: [
+	aCanvas strokeWidth: strokeWidth color: color fillColor: Color white do: [
 		aCanvas
 			moveTo: x1 @ y1;
 			lineTo: x2 @ y1;
@@ -565,7 +582,11 @@ drawOn: aCanvas
 			atBaseline: labelX @ labelY
 			font: font
 			color: Color black.
-	]! !
+	].
+
+	"For verifying morphExtent calculation."
+	"rect := Rectangle origin: 0 @ 0 extent: self morphExtent.
+	aCanvas frameRectangle: rect borderWidth: 1 color: Color red."! !
 
 !SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/20/2025 09:31:34'!
 handlesMouseDown: aMouseEvent
@@ -603,16 +624,22 @@ onChange: aBlock
 	
 	onChange := aBlock! !
 
-!SwitchMorf methodsFor: 'geometry' stamp: 'RMV 2/20/2025 09:31:34'!
+!SwitchMorf methodsFor: 'geometry' stamp: 'RMV 2/20/2025 18:59:39'!
 morphExtent
+	| diameter radius strokeWidth switchWidth |
+	
+	diameter := height.
+	radius := diameter / 2.
+	strokeWidth := height / 20.
+	switchWidth := radius / 2 + diameter + radius - strokeWidth.
 
 	^ label
-		ifNil: height @ height
+		ifNil: switchWidth @ height
 		ifNotNil: [
 			| labelWidth |
 			
 			labelWidth := font widthOfString: label.
-			(height + separation + labelWidth + 10) @ height.
+			(switchWidth + separation + labelWidth) @ height.
 		]! !
 
 !SwitchMorf methodsFor: 'geometry testing' stamp: 'RMV 2/20/2025 09:31:34'!
@@ -646,7 +673,7 @@ label: aString checked: aBoolean
 	self morphExtent: self morphExtent.
 ! !
 
-!SwitchMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/20/2025 11:13:47'!
+!SwitchMorf methodsFor: 'stepping' stamp: 'RMV 2/20/2025 11:13:47'!
 step
 	| deltaPercent |
 
@@ -670,7 +697,7 @@ step
 				ifFalse: [ self stopStepping ]
 		].! !
 
-!SwitchMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/20/2025 11:09:50'!
+!SwitchMorf methodsFor: 'stepping' stamp: 'RMV 2/20/2025 11:09:50'!
 stepTime
 
 	^ 10! !
@@ -1197,7 +1224,7 @@ new
 
 	^ self newColumn! !
 
-!Greeter methodsFor: 'initialization' stamp: 'RMV 2/20/2025 18:34:24'!
+!Greeter methodsFor: 'initialization' stamp: 'RMV 2/20/2025 19:00:07'!
 initialize
 	| ageRow button1 button2 checkbox column greetingLabel moodLabel nameInput radioButtonGroup switch |
 	
