@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 16 February 2025 at 6:58:32 pm'!
+'From Cuis7.3 [latest update: #7044] on 20 February 2025 at 6:34:44 pm'!
 'Description '!
-!provides: 'Morf' 1 13!
+!provides: 'Morf' 1 23!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -34,6 +34,16 @@ BoxMorph subclass: #RadioButtonMorf
 RadioButtonMorf class
 	instanceVariableNames: ''!
 
+!classDefinition: #SwitchMorf category: 'Morf'!
+BoxMorph subclass: #SwitchMorf
+	instanceVariableNames: 'borderColor checked fillColor font height hovered label onChange separation thumbColor thumbPercent value'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Morf'!
+!classDefinition: 'SwitchMorf class' category: 'Morf'!
+SwitchMorf class
+	instanceVariableNames: ''!
+
 !classDefinition: #ButtonMorf category: 'Morf'!
 BorderedBoxMorph subclass: #ButtonMorf
 	instanceVariableNames: 'fillColor font hoverColor hovered label onClick textColor'
@@ -52,6 +62,16 @@ LayoutMorph subclass: #EditableLabelMorf
 	category: 'Morf'!
 !classDefinition: 'EditableLabelMorf class' category: 'Morf'!
 EditableLabelMorf class
+	instanceVariableNames: ''!
+
+!classDefinition: #HelloWorld category: 'Morf'!
+LayoutMorph subclass: #HelloWorld
+	instanceVariableNames: 'greetingLabel input'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Morf'!
+!classDefinition: 'HelloWorld class' category: 'Morf'!
+HelloWorld class
 	instanceVariableNames: ''!
 
 !classDefinition: #RadioButtonGroupMorf category: 'Morf'!
@@ -120,6 +140,10 @@ This is a basic checkbox morph that is simpler and easier to understand that Che
 It also has a look that I find more intuitive.!
 
 !RadioButtonMorf commentStamp: '<historical>' prior: 0!
+This is a basic checkbox morph that is simpler and easier to understand that CheckButtonMorph.
+It also has a look that I find more intuitive.!
+
+!SwitchMorf commentStamp: '<historical>' prior: 0!
 This is a basic checkbox morph that is simpler and easier to understand that CheckButtonMorph.
 It also has a look that I find more intuitive.!
 
@@ -475,6 +499,193 @@ label: aString value: anObject selected: aBoolean
 	^ self new label: aString value: anObject selected: aBoolean
 ! !
 
+!SwitchMorf methodsFor: 'accessing' stamp: 'RMV 2/20/2025 09:31:34'!
+checked
+	
+	^ checked! !
+
+!SwitchMorf methodsFor: 'accessing' stamp: 'RMV 2/20/2025 09:31:34'!
+checked: aBoolean
+	
+	checked := aBoolean.
+	self redrawNeeded.! !
+
+!SwitchMorf methodsFor: 'accessing' stamp: 'RMV 2/20/2025 18:33:39'!
+thumbColor
+	
+	^ thumbColor! !
+
+!SwitchMorf methodsFor: 'accessing' stamp: 'RMV 2/20/2025 18:33:29'!
+thumbColor: aColor
+	
+	thumbColor := aColor! !
+
+!SwitchMorf methodsFor: 'drawing' stamp: 'RMV 2/20/2025 18:32:59'!
+drawOn: aCanvas
+	| diameter halfRadius halfStrokeWidth thumbCheckedX thumbUncheckedX radius strokeWidth x1 x2 y1 y2 |
+		
+	diameter := height.
+	radius := diameter / 2.
+	halfRadius := radius / 2.
+	strokeWidth := height / 20.
+	halfStrokeWidth := strokeWidth / 2.
+	x1 := halfStrokeWidth + radius.
+	x2 := halfRadius + diameter.
+	y1 := halfStrokeWidth.
+	y2 := diameter - halfStrokeWidth.
+	thumbUncheckedX := 	radius + halfStrokeWidth.
+	thumbCheckedX := thumbUncheckedX + radius + halfRadius - halfStrokeWidth.
+	
+	aCanvas strokeWidth: strokeWidth color: Color gray fillColor: Color white do: [
+		aCanvas
+			moveTo: x1 @ y1;
+			lineTo: x2 @ y1;
+			arcTo: x2 @ y2 radius: radius - strokeWidth angleOfXAxis: 0 largeFlag: false sweepFlag: true;
+			lineTo: x1 @ y2;
+			arcTo: x1 @ y1 radius: radius - strokeWidth angleOfXAxis: 0 largeFlag: false sweepFlag: true.
+	].
+
+	aCanvas fillColor: thumbColor do: [
+		| thumbX |
+		"thumbX := checked ifTrue: thumbCheckedX ifFalse: thumbUncheckedX."
+		thumbX := thumbUncheckedX + (thumbPercent * (thumbCheckedX - thumbUncheckedX)).
+		aCanvas
+			circleCenter: thumbX @ radius
+			radius: radius - (strokeWidth * 2)
+	].
+
+	label ifNotNil: [
+		| labelX labelY |
+		labelX := x2 + radius + separation.
+		labelY := radius + (font pointSize / 2) - 1.
+		aCanvas
+			drawString: label
+			from: 1
+			to: label size
+			atBaseline: labelX @ labelY
+			font: font
+			color: Color black.
+	]! !
+
+!SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/20/2025 09:31:34'!
+handlesMouseDown: aMouseEvent
+	
+	^ true! !
+
+!SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/20/2025 09:31:34'!
+handlesMouseOver: aMouseEvent
+	
+	^ true! !
+
+!SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/20/2025 11:05:42'!
+mouseButton1Down: aMouseEvent localPosition: aPosition
+	
+	checked := checked not.
+	"thumbPercent := checked ifTrue: 1 ifFalse: 0."
+	"self redrawNeeded."
+	onChange ifNotNil: [ onChange value: checked ].
+	self startStepping.! !
+
+!SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/20/2025 09:31:34'!
+mouseEnter: aMouseEvent
+	
+	hovered := true.
+	self redrawNeeded ! !
+
+!SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/20/2025 09:31:34'!
+mouseLeave: aMouseEvent
+	
+	hovered := false.
+	self redrawNeeded ! !
+
+!SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/20/2025 09:31:34'!
+onChange: aBlock
+	
+	onChange := aBlock! !
+
+!SwitchMorf methodsFor: 'geometry' stamp: 'RMV 2/20/2025 09:31:34'!
+morphExtent
+
+	^ label
+		ifNil: height @ height
+		ifNotNil: [
+			| labelWidth |
+			
+			labelWidth := font widthOfString: label.
+			(height + separation + labelWidth + 10) @ height.
+		]! !
+
+!SwitchMorf methodsFor: 'geometry testing' stamp: 'RMV 2/20/2025 09:31:34'!
+requiresVectorCanvas
+	
+	^ true! !
+
+!SwitchMorf methodsFor: 'initialization' stamp: 'RMV 2/20/2025 18:33:52'!
+initialize
+	
+	super initialize.
+	
+	borderColor := Color gray muchLighter.
+	checked := false.
+	fillColor := Color gray.
+	font := FontFamily defaultFamilyAndPointSize.
+	height := 24.
+	hovered := false.
+	label := ''.
+	separation := 5. "between circle and label"
+	thumbColor := Color gray.
+	thumbPercent := 0.
+	
+	self morphExtent: self morphExtent.! !
+
+!SwitchMorf methodsFor: 'private' stamp: 'RMV 2/20/2025 09:31:34'!
+label: aString checked: aBoolean
+
+	label := aString.
+	checked := aBoolean.
+	self morphExtent: self morphExtent.
+! !
+
+!SwitchMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/20/2025 11:13:47'!
+step
+	| deltaPercent |
+
+	deltaPercent := 0.1.
+	
+	checked
+		ifTrue: [
+			thumbPercent < 1
+				ifTrue: [
+					thumbPercent := thumbPercent + deltaPercent min: 1.
+					self redrawNeeded.
+				]
+				ifFalse: [ self stopStepping ]
+		]
+		ifFalse: [
+			thumbPercent > 0
+				ifTrue: [
+					thumbPercent := thumbPercent - deltaPercent max: 0.
+					self redrawNeeded.
+				]
+				ifFalse: [ self stopStepping ]
+		].! !
+
+!SwitchMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/20/2025 11:09:50'!
+stepTime
+
+	^ 10! !
+
+!SwitchMorf class methodsFor: 'as yet unclassified' stamp: 'RMV 2/20/2025 09:31:34'!
+label: aString
+
+	^ self label: aString checked: false.! !
+
+!SwitchMorf class methodsFor: 'as yet unclassified' stamp: 'RMV 2/20/2025 09:31:34'!
+label: aString checked: aBoolean	
+	
+	^ self new label: aString checked: aBoolean
+! !
+
 !ButtonMorf methodsFor: 'drawing' stamp: 'RMV 2/10/2025 11:07:54'!
 drawOn: aCanvas
 	| borderRect buttonColor buttonRect height radius width |
@@ -707,6 +918,55 @@ new
 	the superclass LayoutMorph new method triggers an error."
 	^ self newRow! !
 
+!HelloWorld methodsFor: 'as yet unclassified' stamp: 'RMV 2/19/2025 19:29:52'!
+greet
+	"Update greetingLabel with a message
+	that includes text from the input."
+	| name |
+	
+	name := input text.
+	greetingLabel contents: 'Hello, ', name, '!!'! !
+
+!HelloWorld methodsFor: 'as yet unclassified' stamp: 'RMV 2/19/2025 19:27:43'!
+initialize
+	| button font row |
+	
+	super initialize. "DON'T FORGET THIS!!"
+
+	"Create a single-line text input.
+	Using zero for the height causes it to calculate
+	the minimum required height for a single line."
+	input := TextModelMorph withText: '' ::
+		hideScrollBarsIndefinitely;
+    		morphExtent: 200 @ 0; "calculates required height for one line"
+    		wrapFlag: false.
+	
+	"Create a button that when clicked sends
+	the message #greet to the current object."
+	button := PluggableButtonMorph model: self action: #greet.
+	button label: 'Greet'.
+	
+	row := LayoutMorph newRow
+		gap: 10;
+		addMorph: (LabelMorph contents: 'Name:');
+		addMorph: input;
+		addMorph: button.
+	
+	font := FontFamily defaultFamilyAndPointSize.
+	greetingLabel := LabelMorph contents: '' ::
+		color: Color red;
+		font: font bold.
+	
+	self
+		padding: 20;
+		addMorph: row;
+		addMorph: greetingLabel.! !
+
+!HelloWorld class methodsFor: 'as yet unclassified' stamp: 'RMV 2/19/2025 18:54:49'!
+new
+
+	^ self newColumn! !
+
 !RadioButtonGroupMorf methodsFor: 'private' stamp: 'RMV 2/14/2025 12:44:21'!
 labels: aLabelArray values: aValueArray
 	| localOnChange |
@@ -937,9 +1197,9 @@ new
 
 	^ self newColumn! !
 
-!Greeter methodsFor: 'initialization' stamp: 'RMV 2/16/2025 15:48:20'!
+!Greeter methodsFor: 'initialization' stamp: 'RMV 2/20/2025 18:34:24'!
 initialize
-	| ageRow button1 button2 checkbox column greetingLabel moodLabel nameInput radioButtonGroup |
+	| ageRow button1 button2 checkbox column greetingLabel moodLabel nameInput radioButtonGroup switch |
 	
 	super initialize.
 		
@@ -964,11 +1224,15 @@ initialize
 	
 	moodLabel := LabelMorph contents: 'MOOD'.
 	
-	"checkbox := LabelledCheckboxMorph label: 'Happy?'."
 	checkbox := CheckboxMorf label: 'Happy?'.
 	checkbox onChange: [ :checked |
 		moodLabel color: (checked ifTrue: [ Color green ] ifFalse: [ Color red ]).
 	].
+
+	switch := SwitchMorf label: 'Retired?' :: thumbColor: Color green.
+	switch onChange: [ :checked |
+		moodLabel color: (checked ifTrue: [ Color purple ] ifFalse: [ Color blue ]).
+	].	
 	
 	radioButtonGroup := RadioButtonGroupMorf
 		labels: #(Red Green Blue)
@@ -988,6 +1252,7 @@ initialize
 		addMorph: nameInput fixedHeight: 0; "to use minimum height that fits row children"
 		addMorph: ageRow fixedHeight: 0; "to use minimum height that fits row children"
 		addMorph: checkbox;
+		addMorph: switch;
 		addMorph: radioButtonGroup;
 		addMorph: moodLabel;
 		addMorph: button1;
