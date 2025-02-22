@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 3:30:26 pm'!
+'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 4:58:52 pm'!
 'Description '!
-!provides: 'Morf' 1 46!
+!provides: 'Morf' 1 49!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -548,7 +548,7 @@ thumbColor: aColor
 	
 	thumbColor := aColor! !
 
-!SwitchMorf methodsFor: 'drawing' stamp: 'RMV 2/22/2025 14:19:05'!
+!SwitchMorf methodsFor: 'drawing' stamp: 'RMV 2/22/2025 16:55:13'!
 drawOn: aCanvas
 	| diameter hoverColor rect strokeColor strokeWidth width |
 		
@@ -1492,55 +1492,10 @@ singleLineWithText: aTextOrString placeholder: phString width: aNumber
 		tabToFocus: true;
 		wrapFlag: false.! !
 
-!AbstractVectorCanvas methodsFor: '*Morf' stamp: 'RMV 2/22/2025 13:52:10'!
-drawOval: aRect
-	| arcTo diameter halfStrokeWidth height radius strokeWidth width x1 x2 y1 y2 |
-		
-	width := aRect width.
-	height := aRect height.
-	
-	strokeWidth := engine strokeWidth.
-	strokeWidth logAs: 'strokeWidth'.
-	halfStrokeWidth := strokeWidth / 2.
-	diameter := (height min: width) - strokeWidth.
-	radius := diameter / 2.
-	
-	arcTo := [ :endPoint |
-		self
-			arcTo: endPoint
-			radius: radius
-			angleOfXAxis: 0
-			largeFlag: false
-			sweepFlag: true
-	].
-	
-	height < width
-		ifTrue: [
-			x1 := halfStrokeWidth + radius.
-			x2 := width - x1.
-			y1 := 0.
-			y2 := height - y1.
-			self moveTo: x1 @ y1; lineTo: x2 @ y1.
-			arcTo value: x2 @ y2.
-			self lineTo: x1 @ y2.
-			arcTo value: x1 @ y1.
-		]
-		ifFalse: [
-			x1 := halfStrokeWidth.
-			y1 := halfStrokeWidth + radius.
-			x2 := width - x1.
-			y2 := height - y1.
-			self moveTo: x1 @ y2; lineTo: x1 @ y1.
-			arcTo value: x2 @ y1.
-			self lineTo: x2 @ y2.
-			arcTo value: x1 @ y2.
-		].
-		
-! !
-
-!AbstractVectorCanvas methodsFor: '*Morf' stamp: 'RMV 2/22/2025 14:05:07'!
+!AbstractVectorCanvas methodsFor: '*Morf' stamp: 'RMV 2/22/2025 16:58:25'!
 drawOval: aRect strokeWidth: aStrokeWidth
-	| arcTo diameter halfStrokeWidth height radius strokeWidth width x1 x2 y1 y2 |
+	| diameter halfStrokeWidth height p1 p2 p3 p4
+	  radius strokeWidth width x1 x2 y1 y2 |
 		
 	width := aRect width.
 	height := aRect height.
@@ -1552,36 +1507,35 @@ drawOval: aRect strokeWidth: aStrokeWidth
 	diameter := (height min: width) - strokeWidth.
 	radius := diameter / 2.
 	
-	arcTo := [ :endPoint |
-		self
-			arcTo: endPoint
-			radius: radius
-			angleOfXAxis: 0
-			largeFlag: false
-			sweepFlag: true
-	].
-	
 	height < width
 		ifTrue: [
 			x1 := halfStrokeWidth + radius.
 			x2 := width - x1.
 			y1 := halfStrokeWidth.
 			y2 := height - y1.
-			self moveTo: x1 @ y1; lineTo: x2 @ y1.
-			arcTo value: x2 @ y2.
-			self lineTo: x1 @ y2.
-			arcTo value: x1 @ y1.
+			p1 := x1 @ y1.
+			p2 := x2 @ y1.
+			p3 := x2 @ y2.
+			p4 := x1 @ y2.
 		]
 		ifFalse: [
 			x1 := halfStrokeWidth.
 			y1 := halfStrokeWidth + radius.
 			x2 := width - x1.
 			y2 := height - y1.
-			self moveTo: x1 @ y2; lineTo: x1 @ y1.
-			arcTo value: x2 @ y1.
-			self lineTo: x2 @ y2.
-			arcTo value: x1 @ y2.
+			p1 := x1 @ y2.
+			p2 := x1 @ y1.
+			p3 := x2 @ y1.
+			p4 := x2 @ y2.
 		].
+		
+		self
+			moveTo: p1;
+			lineTo: p2;
+			arcTo: p3 radius: radius angleOfXAxis: 0 largeFlag: false sweepFlag: true;
+			lineTo: p4;
+			arcTo: p1 radius: radius angleOfXAxis: 0 largeFlag: false sweepFlag: true.
+
 		
 ! !
 
