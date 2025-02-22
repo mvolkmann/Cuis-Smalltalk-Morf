@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 2:30:48 pm'!
+'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 2:53:53 pm'!
 'Description '!
-!provides: 'Morf' 1 41!
+!provides: 'Morf' 1 43!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -880,7 +880,7 @@ handlesMouseDown: aMouseEvent
 	
 	^ true! !
 
-!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/16/2025 18:38:36'!
+!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 14:53:24'!
 initialize
 	
 	super initialize.
@@ -889,12 +889,7 @@ initialize
 	label := LabelMorph new.
 	self addMorph: label.
 	
-	textInput := TextModelMorph withText: '' ::
-		wrapFlag: false;
-		morphExtent: 200 @ 0; "calculates required height for one line"
-		hideScrollBarsIndefinitely;
-		askBeforeDiscardingEdits: false;
-		visible: false.
+	textInput := TextModelMorph singleLineWithText: '' :: visible: false.
 	
 	textInput keystrokeAction: [ :evt |
 		evt isReturnKey ifTrue: [
@@ -952,19 +947,14 @@ greet
 	name := input text.
 	greetingLabel contents: 'Hello, ', name, '!!'! !
 
-!HelloWorld methodsFor: 'as yet unclassified' stamp: 'RMV 2/19/2025 19:27:43'!
+!HelloWorld methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 14:52:22'!
 initialize
 	| button font row |
 	
 	super initialize. "DON'T FORGET THIS!!"
 
-	"Create a single-line text input.
-	Using zero for the height causes it to calculate
-	the minimum required height for a single line."
-	input := TextModelMorph withText: '' ::
-		hideScrollBarsIndefinitely;
-    		morphExtent: 200 @ 0; "calculates required height for one line"
-    		wrapFlag: false.
+	"Create a single-line text input."
+	input := TextModelMorph singleLineWithText: ''.
 	
 	"Create a button that when clicked sends
 	the message #greet to the current object."
@@ -1084,7 +1074,7 @@ initialize
 	"self layoutSpec proportionalHeight: nil."
 ! !
 
-!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/16/2025 16:48:43'!
+!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/22/2025 14:49:07'!
 label: labelString placeholder: phString
 	
 	self layoutSpec proportionalHeight: nil.
@@ -1094,13 +1084,7 @@ label: labelString placeholder: phString
 		self gap: 10.
 	].
 	
-	textModelMorph := TextModelMorph withText: '' ::
-		askBeforeDiscardingEdits: false;
-		emptyTextDisplayMessage: phString;
-		hideScrollBarsIndefinitely;
-		tabToFocus: true;
-		wrapFlag: false.
-	
+	textModelMorph := TextModelMorph singleLineWithText: '' placeholder: phString.
 	self addMorph: textModelMorph proportionalWidth: 1.! !
 
 !TextInputMorf class methodsFor: 'instance creation' stamp: 'RMV 2/12/2025 19:03:54'!
@@ -1434,6 +1418,27 @@ open
 	 This must be done AFTER sending #openInWorld!!"
 	extent := instance minimumExtent.
 	instance morphExtent: 300 @ extent y.! !
+
+!TextModelMorph class methodsFor: '*Morf' stamp: 'RMV 2/22/2025 14:48:00'!
+singleLineWithText: aTextOrString
+
+	^ self singleLineWithText: aTextOrString placeholder: nil! !
+
+!TextModelMorph class methodsFor: '*Morf' stamp: 'RMV 2/22/2025 14:51:50'!
+singleLineWithText: aTextOrString placeholder: phString
+
+	^ self singleLineWithText: aTextOrString placeholder: nil width: 200! !
+
+!TextModelMorph class methodsFor: '*Morf' stamp: 'RMV 2/22/2025 14:51:29'!
+singleLineWithText: aTextOrString placeholder: phString width: aNumber
+
+	^ self withModel: (TextModel withText: aTextOrString) ::
+		askBeforeDiscardingEdits: false;
+		emptyTextDisplayMessage: phString;
+		hideScrollBarsIndefinitely;
+		morphExtent: aNumber @ 0; "calculates height for one line"
+		tabToFocus: true;
+		wrapFlag: false.! !
 
 !AbstractVectorCanvas methodsFor: '*Morf' stamp: 'RMV 2/22/2025 13:52:10'!
 drawOval: aRect
