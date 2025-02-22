@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 20 February 2025 at 7:00:52 pm'!
+'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 2:30:48 pm'!
 'Description '!
-!provides: 'Morf' 1 26!
+!provides: 'Morf' 1 41!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -530,62 +530,26 @@ thumbColor: aColor
 	
 	thumbColor := aColor! !
 
-!SwitchMorf methodsFor: 'drawing' stamp: 'RMV 2/20/2025 19:00:41'!
+!SwitchMorf methodsFor: 'drawing' stamp: 'RMV 2/22/2025 14:19:05'!
 drawOn: aCanvas
-	| color diameter halfRadius halfStrokeWidth hoverColor
-	  radius strokeWidth thumbCheckedX thumbUncheckedX
-	  x1 x2 y1 y2 |
+	| diameter hoverColor rect strokeColor strokeWidth width |
 		
 	diameter := height.
-	radius := diameter / 2.
-	halfRadius := radius / 2.
 	strokeWidth := height / 20.
-	halfStrokeWidth := strokeWidth / 2.
 	
 	hoverColor := borderColor muchDarker.
-	color := hovered ifTrue: hoverColor ifFalse: borderColor.
-
-	x1 := halfStrokeWidth + radius.
-	x2 := halfRadius + diameter.
-	y1 := halfStrokeWidth.
-	y2 := diameter - halfStrokeWidth.
+	strokeColor := hovered ifTrue: hoverColor ifFalse: borderColor.
 	
-	thumbUncheckedX := 	radius + halfStrokeWidth.
-	thumbCheckedX := thumbUncheckedX + radius + halfRadius - halfStrokeWidth.
-	
-	aCanvas strokeWidth: strokeWidth color: color fillColor: Color white do: [
-		aCanvas
-			moveTo: x1 @ y1;
-			lineTo: x2 @ y1;
-			arcTo: x2 @ y2 radius: radius - strokeWidth angleOfXAxis: 0 largeFlag: false sweepFlag: true;
-			lineTo: x1 @ y2;
-			arcTo: x1 @ y1 radius: radius - strokeWidth angleOfXAxis: 0 largeFlag: false sweepFlag: true.
+	width := diameter * 1.75.
+	rect := Rectangle origin: 0 @ 0 extent: width @ diameter.
+	aCanvas strokeWidth: strokeWidth color: strokeColor fillColor: Color white do: [
+		aCanvas drawOval: rect strokeWidth: strokeWidth.
 	].
 
-	aCanvas fillColor: thumbColor do: [
-		| thumbX |
-		"thumbX := checked ifTrue: thumbCheckedX ifFalse: thumbUncheckedX."
-		thumbX := thumbUncheckedX + (thumbPercent * (thumbCheckedX - thumbUncheckedX)).
-		aCanvas
-			circleCenter: thumbX @ radius
-			radius: radius - (strokeWidth * 2)
-	].
+	self drawThumbOn: aCanvas.
+	label ifNotNil: [ self drawLabelOn: aCanvas ].
 
-	label ifNotNil: [
-		| labelX labelY |
-		labelX := x2 + radius + separation.
-		labelY := radius + (font pointSize / 2) - 1.
-		aCanvas
-			drawString: label
-			from: 1
-			to: label size
-			atBaseline: labelX @ labelY
-			font: font
-			color: Color black.
-	].
-
-	"For verifying morphExtent calculation."
-	"rect := Rectangle origin: 0 @ 0 extent: self morphExtent.
+	"For verifying morphExtent calculation.
 	aCanvas frameRectangle: rect borderWidth: 1 color: Color red."! !
 
 !SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/20/2025 09:31:34'!
@@ -665,14 +629,6 @@ initialize
 	
 	self morphExtent: self morphExtent.! !
 
-!SwitchMorf methodsFor: 'private' stamp: 'RMV 2/20/2025 09:31:34'!
-label: aString checked: aBoolean
-
-	label := aString.
-	checked := aBoolean.
-	self morphExtent: self morphExtent.
-! !
-
 !SwitchMorf methodsFor: 'stepping' stamp: 'RMV 2/20/2025 11:13:47'!
 step
 	| deltaPercent |
@@ -701,6 +657,48 @@ step
 stepTime
 
 	^ 10! !
+
+!SwitchMorf methodsFor: 'private' stamp: 'RMV 2/20/2025 09:31:34'!
+label: aString checked: aBoolean
+
+	label := aString.
+	checked := aBoolean.
+	self morphExtent: self morphExtent.
+! !
+
+!SwitchMorf methodsFor: 'private-drawing' stamp: 'RMV 2/22/2025 14:25:07'!
+drawLabelOn: aCanvas	
+	| labelX labelY |
+	
+	labelX := height * 1.75 + separation.
+	labelY := height / 2 + (font pointSize / 2) - 1.
+	aCanvas
+		drawString: label
+		from: 1
+		to: label size
+		atBaseline: labelX @ labelY
+		font: font
+		color: Color black.
+! !
+
+!SwitchMorf methodsFor: 'private-drawing' stamp: 'RMV 2/22/2025 14:29:03'!
+drawThumbOn: aCanvas		
+	| halfStrokeWidth radius strokeWidth thumbCheckedX thumbUncheckedX thumbX width |
+	
+	radius := height / 2.
+	strokeWidth := height / 20.
+	halfStrokeWidth := strokeWidth / 2.
+	width := height * 1.75.
+
+	thumbUncheckedX := 	halfStrokeWidth + radius.
+	thumbCheckedX := width - thumbUncheckedX.
+	thumbX := thumbUncheckedX + (thumbPercent * (thumbCheckedX - thumbUncheckedX)).
+
+	aCanvas fillColor: thumbColor do: [
+		aCanvas
+			circleCenter: thumbX @ radius
+			radius: radius - (strokeWidth * 2)
+	].! !
 
 !SwitchMorf class methodsFor: 'as yet unclassified' stamp: 'RMV 2/20/2025 09:31:34'!
 label: aString
@@ -1436,4 +1434,102 @@ open
 	 This must be done AFTER sending #openInWorld!!"
 	extent := instance minimumExtent.
 	instance morphExtent: 300 @ extent y.! !
+
+!AbstractVectorCanvas methodsFor: '*Morf' stamp: 'RMV 2/22/2025 13:52:10'!
+drawOval: aRect
+	| arcTo diameter halfStrokeWidth height radius strokeWidth width x1 x2 y1 y2 |
+		
+	width := aRect width.
+	height := aRect height.
+	
+	strokeWidth := engine strokeWidth.
+	strokeWidth logAs: 'strokeWidth'.
+	halfStrokeWidth := strokeWidth / 2.
+	diameter := (height min: width) - strokeWidth.
+	radius := diameter / 2.
+	
+	arcTo := [ :endPoint |
+		self
+			arcTo: endPoint
+			radius: radius
+			angleOfXAxis: 0
+			largeFlag: false
+			sweepFlag: true
+	].
+	
+	height < width
+		ifTrue: [
+			x1 := halfStrokeWidth + radius.
+			x2 := width - x1.
+			y1 := 0.
+			y2 := height - y1.
+			self moveTo: x1 @ y1; lineTo: x2 @ y1.
+			arcTo value: x2 @ y2.
+			self lineTo: x1 @ y2.
+			arcTo value: x1 @ y1.
+		]
+		ifFalse: [
+			x1 := halfStrokeWidth.
+			y1 := halfStrokeWidth + radius.
+			x2 := width - x1.
+			y2 := height - y1.
+			self moveTo: x1 @ y2; lineTo: x1 @ y1.
+			arcTo value: x2 @ y1.
+			self lineTo: x2 @ y2.
+			arcTo value: x1 @ y2.
+		].
+		
+! !
+
+!AbstractVectorCanvas methodsFor: '*Morf' stamp: 'RMV 2/22/2025 14:05:07'!
+drawOval: aRect strokeWidth: aStrokeWidth
+	| arcTo diameter halfStrokeWidth height radius strokeWidth width x1 x2 y1 y2 |
+		
+	width := aRect width.
+	height := aRect height.
+	
+	"TODO: Why does this give the wrong value?"
+	"strokeWidth := engine strokeWidth."
+	strokeWidth := aStrokeWidth.
+	halfStrokeWidth := strokeWidth / 2.
+	diameter := (height min: width) - strokeWidth.
+	radius := diameter / 2.
+	
+	arcTo := [ :endPoint |
+		self
+			arcTo: endPoint
+			radius: radius
+			angleOfXAxis: 0
+			largeFlag: false
+			sweepFlag: true
+	].
+	
+	height < width
+		ifTrue: [
+			x1 := halfStrokeWidth + radius.
+			x2 := width - x1.
+			y1 := halfStrokeWidth.
+			y2 := height - y1.
+			self moveTo: x1 @ y1; lineTo: x2 @ y1.
+			arcTo value: x2 @ y2.
+			self lineTo: x1 @ y2.
+			arcTo value: x1 @ y1.
+		]
+		ifFalse: [
+			x1 := halfStrokeWidth.
+			y1 := halfStrokeWidth + radius.
+			x2 := width - x1.
+			y2 := height - y1.
+			self moveTo: x1 @ y2; lineTo: x1 @ y1.
+			arcTo value: x2 @ y1.
+			self lineTo: x2 @ y2.
+			arcTo value: x1 @ y2.
+		].
+		
+! !
+
+!VectorEngine methodsFor: '*Morf' stamp: 'RMV 2/22/2025 12:47:10'!
+strokeWidth
+
+	^ strokeWidth! !
 Todo initialize!
