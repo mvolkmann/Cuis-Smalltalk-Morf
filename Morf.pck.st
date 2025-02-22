@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 3:14:58 pm'!
+'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 3:30:26 pm'!
 'Description '!
-!provides: 'Morf' 1 45!
+!provides: 'Morf' 1 46!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -172,8 +172,8 @@ and make the LabelMorph visible with the new contents.
 Press the escape key to discard the changes, make the TextEntry2Morph invisible,
 and make the LabelMorph visible with the old contents.!
 
-!TextInputMorf commentStamp: 'RMV 2/22/2025 15:12:51' prior: 0!
-This is the same as TextModelMorph except that it always displays a border, not just when it has focus.!
+!TextInputMorf commentStamp: 'RMV 2/22/2025 15:30:20' prior: 0!
+Instance of this class render a TextModelMorf preceded by a text label.!
 
 !Todo commentStamp: 'RMV 2/16/2025 18:47:39' prior: 0!
 Instances of this class represent a todo item that:
@@ -183,6 +183,11 @@ Instances of this class represent a todo item that:
 
 !TodosPane commentStamp: 'RMV 2/16/2025 18:24:52' prior: 0!
 This is a column LayoutMorph that automatically adjusts its width to fill its owner morph.!
+
+!TextModelMorf commentStamp: 'RMV 2/22/2025 15:29:35' prior: 0!
+This class is the same as TextModelMorph except that it always displays a border, not just when it has focus.
+
+This class wouldn't be needed if instances of TextModelMorph could be configured to do this.!
 
 !TodoApp commentStamp: 'RMV 8/18/2024 14:45:24' prior: 0!
 This is a basic todo application.
