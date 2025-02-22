@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 2:53:53 pm'!
+'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 3:14:58 pm'!
 'Description '!
-!provides: 'Morf' 1 43!
+!provides: 'Morf' 1 45!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -114,6 +114,16 @@ LayoutMorph subclass: #TodosPane
 TodosPane class
 	instanceVariableNames: ''!
 
+!classDefinition: #TextModelMorf category: 'Morf'!
+TextModelMorph subclass: #TextModelMorf
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Morf'!
+!classDefinition: 'TextModelMorf class' category: 'Morf'!
+TextModelMorf class
+	instanceVariableNames: ''!
+
 !classDefinition: #Greeter category: 'Morf'!
 SystemWindow subclass: #Greeter
 	instanceVariableNames: 'selectedColor'
@@ -161,6 +171,9 @@ and make the LabelMorph visible with the new contents.
 
 Press the escape key to discard the changes, make the TextEntry2Morph invisible,
 and make the LabelMorph visible with the old contents.!
+
+!TextInputMorf commentStamp: 'RMV 2/22/2025 15:12:51' prior: 0!
+This is the same as TextModelMorph except that it always displays a border, not just when it has focus.!
 
 !Todo commentStamp: 'RMV 2/16/2025 18:47:39' prior: 0!
 Instances of this class represent a todo item that:
@@ -700,12 +713,12 @@ drawThumbOn: aCanvas
 			radius: radius - (strokeWidth * 2)
 	].! !
 
-!SwitchMorf class methodsFor: 'as yet unclassified' stamp: 'RMV 2/20/2025 09:31:34'!
+!SwitchMorf class methodsFor: 'instance creation' stamp: 'RMV 2/20/2025 09:31:34'!
 label: aString
 
 	^ self label: aString checked: false.! !
 
-!SwitchMorf class methodsFor: 'as yet unclassified' stamp: 'RMV 2/20/2025 09:31:34'!
+!SwitchMorf class methodsFor: 'instance creation' stamp: 'RMV 2/20/2025 09:31:34'!
 label: aString checked: aBoolean	
 	
 	^ self new label: aString checked: aBoolean
@@ -880,7 +893,7 @@ handlesMouseDown: aMouseEvent
 	
 	^ true! !
 
-!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 14:53:24'!
+!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 15:14:16'!
 initialize
 	
 	super initialize.
@@ -889,7 +902,7 @@ initialize
 	label := LabelMorph new.
 	self addMorph: label.
 	
-	textInput := TextModelMorph singleLineWithText: '' :: visible: false.
+	textInput := TextModelMorf singleLineWithText: '' :: visible: false.
 	
 	textInput keystrokeAction: [ :evt |
 		evt isReturnKey ifTrue: [
@@ -947,7 +960,7 @@ greet
 	name := input text.
 	greetingLabel contents: 'Hello, ', name, '!!'! !
 
-!HelloWorld methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 14:52:22'!
+!HelloWorld methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 15:14:51'!
 initialize
 	| button font row |
 	
@@ -1074,7 +1087,7 @@ initialize
 	"self layoutSpec proportionalHeight: nil."
 ! !
 
-!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/22/2025 14:49:07'!
+!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/22/2025 15:11:21'!
 label: labelString placeholder: phString
 	
 	self layoutSpec proportionalHeight: nil.
@@ -1084,7 +1097,7 @@ label: labelString placeholder: phString
 		self gap: 10.
 	].
 	
-	textModelMorph := TextModelMorph singleLineWithText: '' placeholder: phString.
+	textModelMorph := TextModelMorf singleLineWithText: '' placeholder: phString.
 	self addMorph: textModelMorph proportionalWidth: 1.! !
 
 !TextInputMorf class methodsFor: 'instance creation' stamp: 'RMV 2/12/2025 19:03:54'!
@@ -1205,6 +1218,40 @@ initialize
 new
 
 	^ self newColumn! !
+
+!TextModelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 15:13:38'!
+drawOn: aCanvas
+	"Include a thin red inset border for unaccepted edits, or, if the unaccepted edits are known to conflict with a change made somewhere else to the same method (typically), put a thick red frame"
+	| bw bc |
+	self flag: #todo.
+	"Integrate this method with the Theme system. --cbr"
+	super drawOn: aCanvas.
+	bw := Preferences at: #focusIndicatorWidth.
+	"This is the only line that differs from the the same method in TextModelMorph."
+	bc := Color gray muchLighter.
+	self wantsFrameAdornments ifTrue: [
+		model refusesToAccept
+			ifTrue: [ "Put up feedback showing that code cannot be saved in this state"
+				bc := Color tan ]
+			ifFalse: [
+				scroller hasEditingConflicts
+					ifTrue: [
+						bw := 3.
+						bc := Color red ]
+					ifFalse: [
+						scroller hasUnacceptedEdits ifTrue: [ bc := Color red ]]]].
+	(drawKeyboardFocusIndicator and: [ scroller hasKeyboardFocus ])
+		ifTrue: [ bc ifNil: [ bc := Theme current focusIndicator ]]
+		ifFalse: [
+			bc ifNotNil: [
+				bc := bc
+					alphaMixed: 0.4
+					with: Color white ]].
+	bc ifNotNil: [
+		aCanvas
+			frameRectangle: self focusIndicatorRectangle
+			borderWidth: bw
+			color: bc ].! !
 
 !Greeter methodsFor: 'initialization' stamp: 'RMV 2/20/2025 19:00:07'!
 initialize
