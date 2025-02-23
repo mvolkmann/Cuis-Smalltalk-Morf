@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 4:58:52 pm'!
+'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 6:44:06 pm'!
 'Description '!
-!provides: 'Morf' 1 49!
+!provides: 'Morf' 1 52!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -22,6 +22,36 @@ BoxMorph subclass: #CheckboxMorf
 	category: 'Morf'!
 !classDefinition: 'CheckboxMorf class' category: 'Morf'!
 CheckboxMorf class
+	instanceVariableNames: ''!
+
+!classDefinition: #ClickDemo category: 'Morf'!
+BoxMorph subclass: #ClickDemo
+	instanceVariableNames: 'color offColor onColor radius'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Morf'!
+!classDefinition: 'ClickDemo class' category: 'Morf'!
+ClickDemo class
+	instanceVariableNames: ''!
+
+!classDefinition: #HoverDemo category: 'Morf'!
+BoxMorph subclass: #HoverDemo
+	instanceVariableNames: 'color offColor onColor radius'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Morf'!
+!classDefinition: 'HoverDemo class' category: 'Morf'!
+HoverDemo class
+	instanceVariableNames: ''!
+
+!classDefinition: #KeyDemo category: 'Morf'!
+BoxMorph subclass: #KeyDemo
+	instanceVariableNames: 'color radius'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Morf'!
+!classDefinition: 'KeyDemo class' category: 'Morf'!
+KeyDemo class
 	instanceVariableNames: ''!
 
 !classDefinition: #RadioButtonMorf category: 'Morf'!
@@ -383,6 +413,160 @@ label: aString checked: aBoolean
 	^ self new label: aString checked: aBoolean
 ! !
 
+!ClickDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:09:29'!
+drawOn: aCanvas
+
+	aCanvas fillColor: color do: [
+		aCanvas
+			circleCenter: radius @ radius
+			radius: radius
+	].! !
+
+!ClickDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:13:01'!
+handlesMouseDown: aMouseEvent
+	
+	^ true! !
+
+!ClickDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:43:07'!
+initialize
+
+	super initialize.
+	offColor := `Color red`.
+	onColor := `Color green`.
+	color := offColor.
+	radius := 100.
+	self morphExtent: self morphExtent.
+	'Click the circle to toggle its color.' print.! !
+
+!ClickDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:11:48'!
+morphExtent
+	| diameter |
+	
+	diameter := radius * 2.
+	^ diameter @ diameter. ! !
+
+!ClickDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:17:18'!
+mouseButton1Down: aMouseEvent localPosition: aPosition
+	
+	color := color = offColor ifTrue: onColor ifFalse: offColor.
+	self redrawNeeded.! !
+
+!ClickDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:10:57'!
+requiresVectorCanvas
+	
+	^ true! !
+
+!HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:17:41'!
+drawOn: aCanvas
+
+	aCanvas fillColor: color do: [
+		aCanvas
+			circleCenter: radius @ radius
+			radius: radius
+	].! !
+
+!HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:18:22'!
+handlesMouseOver: aMouseEvent
+	
+	^ true! !
+
+!HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:43:47'!
+initialize
+
+	super initialize.
+	offColor := `Color red`.
+	onColor := `Color green`.
+	color := offColor.
+	radius := 100.
+	self morphExtent: self morphExtent.
+	'Hover over the circle to change its color and unhover to change it back.' print.! !
+
+!HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:17:41'!
+morphExtent
+	| diameter |
+	
+	diameter := radius * 2.
+	^ diameter @ diameter. ! !
+
+!HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:23:38'!
+mouseEnter: aMouseEvent
+
+	color := onColor.	
+	self redrawNeeded.! !
+
+!HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:20:37'!
+mouseLeave: aMouseEvent
+	
+	color := offColor.
+	self redrawNeeded.! !
+
+!HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:17:41'!
+requiresVectorCanvas
+	
+	^ true! !
+
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:24:10'!
+drawOn: aCanvas
+
+	aCanvas fillColor: color do: [
+		aCanvas
+			circleCenter: radius @ radius
+			radius: radius
+	].! !
+
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:31:31'!
+handlesKeyboard
+	
+	"^ self visible"
+	^ true! !
+
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:34:35'!
+handlesMouseOver: aMouseEvent
+	
+	^ true! !
+
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:42:10'!
+initialize
+
+	super initialize.
+	color := `Color yellow`.
+	radius := 100.
+	self morphExtent: self morphExtent.
+	'Move mouse over the circle and press r, g, or b to change its color.' print.! !
+
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:41:00'!
+keyStroke: aKeyEvent
+	| character |
+	
+	character := Character codePoint: aKeyEvent keyValue.
+	color := character caseOf: {
+		[ $r ] -> [ `Color red` ].
+		[ $g ] -> [ `Color green` ].
+		[ $b ] -> [ `Color blue` ].
+	}.
+	self redrawNeeded.! !
+
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:24:10'!
+morphExtent
+	| diameter |
+	
+	diameter := radius * 2.
+	^ diameter @ diameter. ! !
+
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:34:18'!
+mouseEnter: event
+	
+	super mouseEnter: event.
+	
+	Preferences at: #focusFollowsMouse :: ifTrue: [
+		event hand newKeyboardFocus: self
+	].! !
+
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:24:10'!
+requiresVectorCanvas
+	
+	^ true! !
+
 !RadioButtonMorf methodsFor: 'accessing' stamp: 'RMV 2/11/2025 18:34:11'!
 selected
 	
@@ -589,17 +773,17 @@ mouseButton1Down: aMouseEvent localPosition: aPosition
 	onChange ifNotNil: [ onChange value: checked ].
 	self startStepping.! !
 
-!SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/20/2025 09:31:34'!
+!SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/22/2025 18:19:27'!
 mouseEnter: aMouseEvent
 	
 	hovered := true.
-	self redrawNeeded ! !
+	self redrawNeeded.! !
 
-!SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/20/2025 09:31:34'!
+!SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/22/2025 18:19:30'!
 mouseLeave: aMouseEvent
 	
 	hovered := false.
-	self redrawNeeded ! !
+	self redrawNeeded.! !
 
 !SwitchMorf methodsFor: 'event handling' stamp: 'RMV 2/20/2025 09:31:34'!
 onChange: aBlock
