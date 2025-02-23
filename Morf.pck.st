@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 10:01:52 am'!
+'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 10:26:53 am'!
 'Description '!
-!provides: 'Morf' 1 66!
+!provides: 'Morf' 1 67!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -1338,7 +1338,7 @@ label: labelString placeholder: phString
 		label: labelString placeholder: phString
 ! !
 
-!TextInputMorf class methodsFor: 'private' stamp: 'RMV 2/23/2025 08:27:50'!
+!TextInputMorf class methodsFor: 'private' stamp: 'RMV 2/23/2025 10:26:43'!
 alignLabels: instanceColl left: aBoolean
 	| font labelMorph maxWidth spacer spacerWidth |
 	
@@ -1355,8 +1355,11 @@ alignLabels: instanceColl left: aBoolean
 		spacerWidth := maxWidth - labelMorph morphExtent x.
 		spacerWidth > 0 ifTrue: [
 			spacer := SpacerMorf width: spacerWidth.
-			"The submorphs collection is the in the reverse order!!
-			That is why the spacer must be added behind labelMorph to right-align labels."
+			"When addMorph: is used to add morphs to a LayoutMorph, its submorphs
+			collection holds them in the reverse order from which they were added!!
+			That is why the spacer must be added
+			in front of labelMorph to left-align the labels and
+			behind labelMorph to right-align the labels."
 			aBoolean
 				ifTrue: [ instance addMorph: spacer inFrontOf: labelMorph ]
 				ifFalse: [ instance addMorph: spacer behind: labelMorph ]
