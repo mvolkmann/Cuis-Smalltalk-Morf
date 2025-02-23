@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 9:15:14 am'!
+'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 9:19:10 am'!
 'Description '!
-!provides: 'Morf' 1 63!
+!provides: 'Morf' 1 64!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -1099,7 +1099,7 @@ handlesMouseDown: aMouseEvent
 	
 	^ true! !
 
-!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 15:14:16'!
+!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 09:18:16'!
 initialize
 	
 	super initialize.
@@ -1131,7 +1131,9 @@ initialize
 	So the next line disables showing the context menu."
 	textInput editor class keyboardActions at: 27 + 1 put: #noop:.
 	
-	self addMorph: textInput proportionalWidth: 1.! !
+	self addMorph: textInput proportionalWidth: 1.
+	"The previous message sets proportionalHeight to 1, but we want it to be zero."
+	textInput layoutSpec proportionalHeight: 0.! !
 
 !EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/16/2025 17:20:04'!
 mouseButton1Down: aMouseEvent localPosition: aPosition
