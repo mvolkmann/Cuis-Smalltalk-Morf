@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 6:26:25 am'!
+'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 8:28:09 am'!
 'Description '!
-!provides: 'Morf' 1 53!
+!provides: 'Morf' 1 60!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -74,6 +74,16 @@ BoxMorph subclass: #SwitchMorf
 SwitchMorf class
 	instanceVariableNames: ''!
 
+!classDefinition: #SpacerMorf category: 'Morf'!
+ColoredBoxMorph subclass: #SpacerMorf
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Morf'!
+!classDefinition: 'SpacerMorf class' category: 'Morf'!
+SpacerMorf class
+	instanceVariableNames: ''!
+
 !classDefinition: #ButtonMorf category: 'Morf'!
 BorderedBoxMorph subclass: #ButtonMorf
 	instanceVariableNames: 'fillColor font hoverColor hovered label onClick textColor'
@@ -116,13 +126,13 @@ RadioButtonGroupMorf class
 
 !classDefinition: #TextInputMorf category: 'Morf'!
 LayoutMorph subclass: #TextInputMorf
-	instanceVariableNames: 'inputWidth textModelMorph'
+	instanceVariableNames: 'inputWidth label labelMorph textModelMorph'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
 !classDefinition: 'TextInputMorf class' category: 'Morf'!
 TextInputMorf class
-	instanceVariableNames: 'label model'!
+	instanceVariableNames: 'model'!
 
 !classDefinition: #Todo category: 'Morf'!
 LayoutMorph subclass: #Todo
@@ -913,6 +923,13 @@ label: aString checked: aBoolean
 	^ self new label: aString checked: aBoolean
 ! !
 
+!SpacerMorf class methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 08:08:25'!
+width: aNumber
+
+	^ self new
+		color: Color transparent;
+		morphWidth: aNumber! !
+
 !ButtonMorf methodsFor: 'drawing' stamp: 'RMV 2/10/2025 11:07:54'!
 drawOn: aCanvas
 	| borderRect buttonColor buttonRect height radius width |
@@ -1240,6 +1257,16 @@ inputWidth: aNumber
 
 	textModelMorph layoutSpec fixedWidth: aNumber! !
 
+!TextInputMorf methodsFor: 'accessing' stamp: 'RMV 2/23/2025 06:37:21'!
+label
+
+	^ label! !
+
+!TextInputMorf methodsFor: 'accessing' stamp: 'RMV 2/23/2025 06:48:12'!
+labelMorph
+
+	^ labelMorph! !
+
 !TextInputMorf methodsFor: 'events' stamp: 'RMV 2/12/2025 19:01:19'!
 keystrokeAction: aBlock
 	"Evaluate aBlock on each key press.
@@ -1268,24 +1295,25 @@ returnAction: aBlock
 
 ! !
 
-!TextInputMorf methodsFor: 'initialization' stamp: 'RMV 2/16/2025 16:21:20'!
+!TextInputMorf methodsFor: 'initialization' stamp: 'RMV 2/23/2025 08:09:50'!
 initialize
 
 	super initialize.
-	inputWidth := 200.
-	"self layoutSpec proportionalHeight: nil."
-! !
+	inputWidth := 200.! !
 
-!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/22/2025 15:11:21'!
+!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/23/2025 08:25:23'!
 label: labelString placeholder: phString
 	
+	label := labelString.
 	self layoutSpec proportionalHeight: nil.
 
-	labelString ifNotNil: [
-		self addMorph: (LabelMorph contents: labelString, ':').
-		self gap: 10.
+	label ifNotNil: [
+		labelMorph := LabelMorph contents: label.
+		self
+			addMorph: labelMorph;
+			addMorph: (SpacerMorf width: 10).
 	].
-	
+
 	textModelMorph := TextModelMorf singleLineWithText: '' placeholder: phString.
 	self addMorph: textModelMorph proportionalWidth: 1.! !
 
@@ -1301,6 +1329,41 @@ label: labelString placeholder: phString
 	^ self newRow
 		label: labelString placeholder: phString
 ! !
+
+!TextInputMorf class methodsFor: 'private' stamp: 'RMV 2/23/2025 08:27:50'!
+alignLabels: instanceColl left: aBoolean
+	| font labelMorph maxWidth spacer spacerWidth |
+	
+	font := nil. "TODO: Get from one of the instances?"
+	font ifNil: [ font := FontFamily defaultFamilyAndPointSize ].
+
+	maxWidth := 0.
+	instanceColl do: [ :instance |
+		maxWidth := maxWidth max: (font widthOfString: instance label).
+	].
+	
+	instanceColl do: [ :instance |		
+		labelMorph := instance labelMorph.
+		spacerWidth := maxWidth - labelMorph morphExtent x.
+		spacerWidth > 0 ifTrue: [
+			spacer := SpacerMorf width: spacerWidth.
+			"The submorphs collection is the in the reverse order!!
+			That is why the spacer must be added behind labelMorph to right-align labels."
+			aBoolean
+				ifTrue: [ instance addMorph: spacer inFrontOf: labelMorph ]
+				ifFalse: [ instance addMorph: spacer behind: labelMorph ]
+		]
+	].! !
+
+!TextInputMorf class methodsFor: 'layout' stamp: 'RMV 2/23/2025 08:13:47'!
+alignLabelsLeft: instanceColl
+
+	self alignLabels: instanceColl left: true.! !
+
+!TextInputMorf class methodsFor: 'layout' stamp: 'RMV 2/23/2025 08:13:58'!
+alignLabelsRight: instanceColl
+
+	self alignLabels: instanceColl left: false.! !
 
 !Todo methodsFor: 'accessing' stamp: 'RMV 2/15/2025 14:31:17'!
 done
@@ -1442,9 +1505,14 @@ drawOn: aCanvas
 			borderWidth: bw
 			color: bc ].! !
 
-!Greeter methodsFor: 'initialization' stamp: 'RMV 2/20/2025 19:00:07'!
+!Greeter methodsFor: 'events' stamp: 'RMV 2/1/2025 16:36:20'!
+handleButtonClick
+
+	'got button click' print.! !
+
+!Greeter methodsFor: 'initialization' stamp: 'RMV 2/23/2025 08:26:30'!
 initialize
-	| ageRow button1 button2 checkbox column greetingLabel moodLabel nameInput radioButtonGroup switch |
+	| ageInput button1 button2 checkbox column greetingLabel moodLabel nameInput radioButtonGroup switch |
 	
 	super initialize.
 		
@@ -1452,7 +1520,7 @@ initialize
 	
 	greetingLabel := LabelMorph contents: ''.
 	
-	nameInput := TextInputMorf label: 'Name' placeholder: 'Enter your name'.
+	nameInput := TextInputMorf label: 'Name:' placeholder: 'Enter your name'.
 	
 	"Update greetingLabel every time the contents of nameInput changes."
 	nameInput keystrokeAction: [ :evt |
@@ -1465,7 +1533,7 @@ initialize
 		).
 	].
 	
-	ageRow := TextInputMorf label: 'Age'.
+	ageInput := TextInputMorf label: 'Age:'.
 	
 	moodLabel := LabelMorph contents: 'MOOD'.
 	
@@ -1495,7 +1563,7 @@ initialize
 	column padding: 10. "around window edges; must set after separation"
 	column
 		addMorph: nameInput fixedHeight: 0; "to use minimum height that fits row children"
-		addMorph: ageRow fixedHeight: 0; "to use minimum height that fits row children"
+		addMorph: ageInput fixedHeight: 0; "to use minimum height that fits row children"
 		addMorph: checkbox;
 		addMorph: switch;
 		addMorph: radioButtonGroup;
@@ -1503,14 +1571,13 @@ initialize
 		addMorph: button1;
 		addMorph: button2;
 		addMorph: greetingLabel.
+		
+	TextInputMorf alignLabelsRight: { nameInput. ageInput }.
 	
 	"Left align all child morphs of column."
-	column submorphs do: [ :morph | morph layoutSpec offAxisEdgeWeight: #leftOrTop ].! !
+	column submorphs do: [ :morph | morph layoutSpec offAxisEdgeWeight: #leftOrTop ].		
 
-!Greeter methodsFor: 'as yet unclassified' stamp: 'RMV 2/1/2025 16:36:20'!
-handleButtonClick
-
-	'got button click' print.! !
+! !
 
 !Greeter class methodsFor: 'as yet unclassified' stamp: 'RMV 2/7/2025 16:54:42'!
 open
