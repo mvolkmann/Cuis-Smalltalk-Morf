@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 8:28:09 am'!
+'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 9:15:14 am'!
 'Description '!
-!provides: 'Morf' 1 60!
+!provides: 'Morf' 1 63!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -1301,7 +1301,7 @@ initialize
 	super initialize.
 	inputWidth := 200.! !
 
-!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/23/2025 08:25:23'!
+!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/23/2025 08:49:26'!
 label: labelString placeholder: phString
 	
 	label := labelString.
@@ -1315,7 +1315,15 @@ label: labelString placeholder: phString
 	].
 
 	textModelMorph := TextModelMorf singleLineWithText: '' placeholder: phString.
-	self addMorph: textModelMorph proportionalWidth: 1.! !
+	self addMorph: textModelMorph proportionalWidth: 1.
+	"The previous message sets proportionalHeight to 1, but we want it to be zero."
+	textModelMorph layoutSpec proportionalHeight: 0.! !
+
+!TextInputMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 09:04:12'!
+takeFocus
+
+	self runningWorld activeHand newKeyboardFocus: textModelMorph
+! !
 
 !TextInputMorf class methodsFor: 'instance creation' stamp: 'RMV 2/12/2025 19:03:54'!
 label: aString
@@ -1510,7 +1518,7 @@ handleButtonClick
 
 	'got button click' print.! !
 
-!Greeter methodsFor: 'initialization' stamp: 'RMV 2/23/2025 08:26:30'!
+!Greeter methodsFor: 'initialization' stamp: 'RMV 2/23/2025 09:15:08'!
 initialize
 	| ageInput button1 button2 checkbox column greetingLabel moodLabel nameInput radioButtonGroup switch |
 	
@@ -1575,9 +1583,11 @@ initialize
 	TextInputMorf alignLabelsRight: { nameInput. ageInput }.
 	
 	"Left align all child morphs of column."
-	column submorphs do: [ :morph | morph layoutSpec offAxisEdgeWeight: #leftOrTop ].		
-
-! !
+	column submorphs do: [ :morph | morph layoutSpec offAxisEdgeWeight: #leftOrTop ].
+	
+	"TODO: Why doesn't this cause the text cursor to
+	blink inside the name input instead of the age input?"
+	nameInput takeFocus.! !
 
 !Greeter class methodsFor: 'as yet unclassified' stamp: 'RMV 2/7/2025 16:54:42'!
 open
@@ -1732,16 +1742,21 @@ singleLineWithText: aTextOrString placeholder: phString
 
 	^ self singleLineWithText: aTextOrString placeholder: nil width: 200! !
 
-!TextModelMorph class methodsFor: '*Morf' stamp: 'RMV 2/22/2025 14:51:29'!
+!TextModelMorph class methodsFor: '*Morf' stamp: 'RMV 2/23/2025 08:47:40'!
 singleLineWithText: aTextOrString placeholder: phString width: aNumber
+	| instance |
 
-	^ self withModel: (TextModel withText: aTextOrString) ::
+	instance := self withModel: (TextModel withText: aTextOrString) ::
 		askBeforeDiscardingEdits: false;
 		emptyTextDisplayMessage: phString;
 		hideScrollBarsIndefinitely;
 		morphExtent: aNumber @ 0; "calculates height for one line"
 		tabToFocus: true;
-		wrapFlag: false.! !
+		wrapFlag: false.
+		
+	instance layoutSpec proportionalHeight: 0.
+		
+	^ instance.! !
 
 !AbstractVectorCanvas methodsFor: '*Morf' stamp: 'RMV 2/22/2025 16:58:25'!
 drawOval: aRect strokeWidth: aStrokeWidth
