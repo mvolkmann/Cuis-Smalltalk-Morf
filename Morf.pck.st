@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 10:26:53 am'!
+'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 3:02:14 pm'!
 'Description '!
-!provides: 'Morf' 1 67!
+!provides: 'Morf' 1 70!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -1098,7 +1098,7 @@ handlesMouseDown: aMouseEvent
 	
 	^ true! !
 
-!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 10:01:25'!
+!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 15:01:34'!
 initialize
 	
 	super initialize.
@@ -1132,9 +1132,8 @@ initialize
 	So the next line disables showing the context menu."
 	textInput editor class keyboardActions at: 27 + 1 put: #noop:.
 	
-	self addMorph: textInput proportionalWidth: 1.
-	"The previous message sets proportionalHeight to 1, but we want it to be zero."
-	textInput layoutSpec proportionalHeight: 0.! !
+	self addMorph: textInput.
+	textInput layoutSpec proportionalWidth: 1.! !
 
 !EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 09:52:54'!
 mouseButton1Down: aMouseEvent localPosition: aPosition
@@ -1301,7 +1300,7 @@ initialize
 	super initialize.
 	inputWidth := 200.! !
 
-!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/23/2025 08:49:26'!
+!TextInputMorf methodsFor: 'private' stamp: 'RMV 2/23/2025 15:01:42'!
 label: labelString placeholder: phString
 	
 	label := labelString.
@@ -1315,9 +1314,8 @@ label: labelString placeholder: phString
 	].
 
 	textModelMorph := TextModelMorf singleLineWithText: '' placeholder: phString.
-	self addMorph: textModelMorph proportionalWidth: 1.
-	"The previous message sets proportionalHeight to 1, but we want it to be zero."
-	textModelMorph layoutSpec proportionalHeight: 0.! !
+	self addMorph: textModelMorph.
+	textModelMorph layoutSpec proportionalWidth: 1.! !
 
 !TextInputMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 09:04:12'!
 takeFocus
@@ -1338,17 +1336,16 @@ label: labelString placeholder: phString
 		label: labelString placeholder: phString
 ! !
 
-!TextInputMorf class methodsFor: 'private' stamp: 'RMV 2/23/2025 10:26:43'!
+!TextInputMorf class methodsFor: 'private' stamp: 'RMV 2/23/2025 14:57:27'!
 alignLabels: instanceColl left: aBoolean
 	| font labelMorph maxWidth spacer spacerWidth |
 	
 	font := nil. "TODO: Get from one of the instances?"
 	font ifNil: [ font := FontFamily defaultFamilyAndPointSize ].
 
-	maxWidth := 0.
-	instanceColl do: [ :instance |
-		maxWidth := maxWidth max: (font widthOfString: instance label).
-	].
+	maxWidth := instanceColl
+		inject: 0
+		into: [ :acc :instance | acc max: (font widthOfString: instance label) ].
 	
 	instanceColl do: [ :instance |		
 		labelMorph := instance labelMorph.
@@ -1361,8 +1358,10 @@ alignLabels: instanceColl left: aBoolean
 			in front of labelMorph to left-align the labels and
 			behind labelMorph to right-align the labels."
 			aBoolean
-				ifTrue: [ instance addMorph: spacer inFrontOf: labelMorph ]
-				ifFalse: [ instance addMorph: spacer behind: labelMorph ]
+				"ifTrue: [ instance addMorph: spacer inFrontOf: labelMorph ]
+				ifFalse: [ instance addMorph: spacer behind: labelMorph ]"
+				ifTrue: [ instance privateAddMorph: spacer atIndex: instance submorphCount ]
+				ifFalse: [ instance addMorphBack: spacer ].
 		]
 	].! !
 
@@ -1408,7 +1407,7 @@ onDoneToggle: aBlock
 	
 	onDoneToggle := aBlock! !
 
-!Todo methodsFor: 'initialization' stamp: 'RMV 2/23/2025 09:31:03'!
+!Todo methodsFor: 'initialization' stamp: 'RMV 2/23/2025 15:01:50'!
 initialize
 	| button buttonFont |
 	
@@ -1441,11 +1440,9 @@ initialize
 		color: Color transparent;
 		gap: 10;
 		addMorph: checkbox;
-		addMorph: label proportionalWidth: 1;
+		addMorph: label;
 		addMorph: button.
-	"The message proportionWidth: above also changes proportionHeight to 1,
-	so we need to reset it to zero."
-	label layoutSpec proportionalHeight: 0.
+	label layoutSpec proportionalWidth: 1.
 	 
 	"Center the submorphs vertically."
 	self submorphsDo: [ :morph | morph layoutSpec offAxisEdgeWeight: #center ].! !
@@ -1529,7 +1526,7 @@ handleButtonClick
 
 	'got button click' print.! !
 
-!Greeter methodsFor: 'initialization' stamp: 'RMV 2/23/2025 09:15:08'!
+!Greeter methodsFor: 'initialization' stamp: 'RMV 2/23/2025 14:54:32'!
 initialize
 	| ageInput button1 button2 checkbox column greetingLabel moodLabel nameInput radioButtonGroup switch |
 	
