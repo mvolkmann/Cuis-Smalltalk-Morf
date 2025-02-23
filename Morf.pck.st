@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 9:19:10 am'!
+'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 10:01:52 am'!
 'Description '!
-!provides: 'Morf' 1 64!
+!provides: 'Morf' 1 66!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -1077,11 +1077,10 @@ contents
 	
 	^ label contents! !
 
-!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/14/2025 14:08:05'!
+!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 09:46:24'!
 contents: aString
 	
-	label contents: aString.
-	textInput editor actualContents: aString.! !
+	label contents: aString.! !
 
 !EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/14/2025 13:37:02'!
 font
@@ -1099,7 +1098,7 @@ handlesMouseDown: aMouseEvent
 	
 	^ true! !
 
-!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 09:18:16'!
+!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 10:01:25'!
 initialize
 	
 	super initialize.
@@ -1112,7 +1111,9 @@ initialize
 	
 	textInput keystrokeAction: [ :evt |
 		evt isReturnKey ifTrue: [
-			label contents: textInput editor actualContents.
+			| contents |
+			contents := textInput editor actualContents allButLast. "removes newline"
+			label contents: contents.
 			textInput visible: false.
 			label visible: true.
 		].
@@ -1135,23 +1136,20 @@ initialize
 	"The previous message sets proportionalHeight to 1, but we want it to be zero."
 	textInput layoutSpec proportionalHeight: 0.! !
 
-!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/16/2025 17:20:04'!
+!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 09:52:54'!
 mouseButton1Down: aMouseEvent localPosition: aPosition
 	
 	label visible ifTrue: [
-		| index |
+		| contents index |
 		
+		contents := label contents.
+		contents size logAs: 'contents size'.
+		textInput contents: contents.
+		index := contents size + 1.
 		label visible: false.
 		textInput visible: true.
-		index := textInput text size + 1.
 		textInput selectFrom: index to: index.
 	]! !
-
-!EditableLabelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/14/2025 13:45:59'!
-text: aString
-	
-	label contents: aString.
-	textInput contents: aString.! !
 
 !EditableLabelMorf class methodsFor: 'as yet unclassified' stamp: 'rmv 8/24/2024 12:12:51'!
 new
@@ -1278,7 +1276,7 @@ keystrokeAction: aBlock
 
 ! !
 
-!TextInputMorf methodsFor: 'events' stamp: 'RMV 2/16/2025 16:35:46'!
+!TextInputMorf methodsFor: 'events' stamp: 'RMV 2/23/2025 09:20:12'!
 restoreCursor
 	"Place text cursor at end of text."
 	| index |
@@ -1407,7 +1405,7 @@ onDoneToggle: aBlock
 	
 	onDoneToggle := aBlock! !
 
-!Todo methodsFor: 'initialization' stamp: 'RMV 2/16/2025 18:43:07'!
+!Todo methodsFor: 'initialization' stamp: 'RMV 2/23/2025 09:31:03'!
 initialize
 	| button buttonFont |
 	
@@ -1442,7 +1440,10 @@ initialize
 		addMorph: checkbox;
 		addMorph: label proportionalWidth: 1;
 		addMorph: button.
- 
+	"The message proportionWidth: above also changes proportionHeight to 1,
+	so we need to reset it to zero."
+	label layoutSpec proportionalHeight: 0.
+	 
 	"Center the submorphs vertically."
 	self submorphsDo: [ :morph | morph layoutSpec offAxisEdgeWeight: #center ].! !
 
@@ -1480,6 +1481,11 @@ initialize
 new
 
 	^ self newColumn! !
+
+!TextModelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/23/2025 09:49:06'!
+contents: aString
+
+	self editor actualContents: aString! !
 
 !TextModelMorf methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 15:13:38'!
 drawOn: aCanvas
@@ -1701,17 +1707,18 @@ addTodo: aString atStart: aBoolean
 	todosPane redrawNeeded.
 ! !
 
-!TodoApp methodsFor: 'private' stamp: 'RMV 2/16/2025 18:55:13'!
+!TodoApp methodsFor: 'private' stamp: 'RMV 2/23/2025 10:00:40'!
 addTodoFromEntry
 	| text |
 	
 	text := todoInput contents.
+	text last asciiValue logAs: 'last ascii'.
+	text last = Character lf ifTrue: [ text := text allButLast ].
 	text isEmpty ifFalse: [
 		self addTodo: text atStart: true.
 		
 		"Clear the text input for adding a new todo."
 		todoInput contents: ''.
-		"todoInput keyboardFocusChange: true"
 		todoInput restoreCursor.
 	]! !
 
