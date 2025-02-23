@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 22 February 2025 at 6:44:06 pm'!
+'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 6:26:25 am'!
 'Description '!
-!provides: 'Morf' 1 52!
+!provides: 'Morf' 1 53!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -66,7 +66,7 @@ RadioButtonMorf class
 
 !classDefinition: #SwitchMorf category: 'Morf'!
 BoxMorph subclass: #SwitchMorf
-	instanceVariableNames: 'borderColor checked fillColor font height hovered label onChange separation thumbColor thumbPercent value'
+	instanceVariableNames: 'borderColor checked fillColor font gap height hovered label onChange thumbColor thumbPercent value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
@@ -790,7 +790,7 @@ onChange: aBlock
 	
 	onChange := aBlock! !
 
-!SwitchMorf methodsFor: 'geometry' stamp: 'RMV 2/20/2025 18:59:39'!
+!SwitchMorf methodsFor: 'geometry' stamp: 'RMV 2/23/2025 06:25:54'!
 morphExtent
 	| diameter radius strokeWidth switchWidth |
 	
@@ -805,7 +805,7 @@ morphExtent
 			| labelWidth |
 			
 			labelWidth := font widthOfString: label.
-			(switchWidth + separation + labelWidth) @ height.
+			(switchWidth + gap + labelWidth) @ height.
 		]! !
 
 !SwitchMorf methodsFor: 'geometry testing' stamp: 'RMV 2/20/2025 09:31:34'!
@@ -813,7 +813,7 @@ requiresVectorCanvas
 	
 	^ true! !
 
-!SwitchMorf methodsFor: 'initialization' stamp: 'RMV 2/20/2025 18:33:52'!
+!SwitchMorf methodsFor: 'initialization' stamp: 'RMV 2/23/2025 06:25:49'!
 initialize
 	
 	super initialize.
@@ -822,10 +822,10 @@ initialize
 	checked := false.
 	fillColor := Color gray.
 	font := FontFamily defaultFamilyAndPointSize.
+	gap := 5. "between oval and label"
 	height := 24.
 	hovered := false.
 	label := ''.
-	separation := 5. "between circle and label"
 	thumbColor := Color gray.
 	thumbPercent := 0.
 	
@@ -868,11 +868,11 @@ label: aString checked: aBoolean
 	self morphExtent: self morphExtent.
 ! !
 
-!SwitchMorf methodsFor: 'private-drawing' stamp: 'RMV 2/22/2025 14:25:07'!
+!SwitchMorf methodsFor: 'private-drawing' stamp: 'RMV 2/23/2025 06:25:32'!
 drawLabelOn: aCanvas	
 	| labelX labelY |
 	
-	labelX := height * 1.75 + separation.
+	labelX := height * 1.75 + gap.
 	labelY := height / 2 + (font pointSize / 2) - 1.
 	aCanvas
 		drawString: label
