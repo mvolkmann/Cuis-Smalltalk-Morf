@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7044] on 23 February 2025 at 3:02:14 pm'!
+'From Cuis7.3 [latest update: #7067] on 12 March 2025 at 3:08:12 pm'!
 'Description '!
-!provides: 'Morf' 1 70!
+!provides: 'Morf' 1 75!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -22,6 +22,16 @@ BoxMorph subclass: #CheckboxMorf
 	category: 'Morf'!
 !classDefinition: 'CheckboxMorf class' category: 'Morf'!
 CheckboxMorf class
+	instanceVariableNames: ''!
+
+!classDefinition: #CircleDemo category: 'Morf'!
+BoxMorph subclass: #CircleDemo
+	instanceVariableNames: 'radius'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Morf'!
+!classDefinition: 'CircleDemo class' category: 'Morf'!
+CircleDemo class
 	instanceVariableNames: ''!
 
 !classDefinition: #ClickDemo category: 'Morf'!
@@ -423,6 +433,30 @@ label: aString checked: aBoolean
 	^ self new label: aString checked: aBoolean
 ! !
 
+!CircleDemo methodsFor: 'drawing' stamp: 'RMV 2/25/2025 19:19:33'!
+drawOn: aCanvas
+	
+	aCanvas fillColor: Color purple do: [
+		aCanvas
+			circleCenter: radius @ radius
+			radius: radius
+	].! !
+
+!CircleDemo methodsFor: 'drawing' stamp: 'RMV 2/25/2025 19:10:34'!
+requiresVectorCanvas
+	
+	^ true! !
+
+!CircleDemo methodsFor: 'initialization' stamp: 'RMV 2/25/2025 19:19:33'!
+initialize
+	| diameter |
+
+	super initialize.		
+	diameter := 200.
+	self morphExtent: diameter @ diameter.
+	radius := diameter / 2.
+! !
+
 !ClickDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:09:29'!
 drawOn: aCanvas
 
@@ -437,23 +471,19 @@ handlesMouseDown: aMouseEvent
 	
 	^ true! !
 
-!ClickDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:43:07'!
+!ClickDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/25/2025 19:17:23'!
 initialize
+	| diameter |
 
 	super initialize.
 	offColor := `Color red`.
 	onColor := `Color green`.
 	color := offColor.
-	radius := 100.
-	self morphExtent: self morphExtent.
-	'Click the circle to toggle its color.' print.! !
-
-!ClickDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:11:48'!
-morphExtent
-	| diameter |
 	
-	diameter := radius * 2.
-	^ diameter @ diameter. ! !
+	diameter := 200.
+	self morphExtent: diameter @ diameter.
+	radius := diameter / 2.
+	'Click the circle to toggle its color.' print.! !
 
 !ClickDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:17:18'!
 mouseButton1Down: aMouseEvent localPosition: aPosition
@@ -480,23 +510,19 @@ handlesMouseOver: aMouseEvent
 	
 	^ true! !
 
-!HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:43:47'!
+!HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/25/2025 19:23:40'!
 initialize
+	| diameter |
 
 	super initialize.
 	offColor := `Color red`.
 	onColor := `Color green`.
 	color := offColor.
-	radius := 100.
-	self morphExtent: self morphExtent.
-	'Hover over the circle to change its color and unhover to change it back.' print.! !
-
-!HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:17:41'!
-morphExtent
-	| diameter |
 	
-	diameter := radius * 2.
-	^ diameter @ diameter. ! !
+	diameter := 200.
+	self morphExtent: diameter @ diameter.
+	radius := diameter / 2.
+	'Hover over the circle to change its color and unhover to change it back.' print.! !
 
 !HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:23:38'!
 mouseEnter: aMouseEvent
@@ -524,24 +550,26 @@ drawOn: aCanvas
 			radius: radius
 	].! !
 
-!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:31:31'!
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/25/2025 19:51:22'!
 handlesKeyboard
 	
-	"^ self visible"
-	^ true! !
+	^ self visible! !
 
-!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:34:35'!
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/25/2025 19:50:32'!
 handlesMouseOver: aMouseEvent
 	
 	^ true! !
 
-!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:42:10'!
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/25/2025 19:24:31'!
 initialize
+	| diameter |
 
 	super initialize.
 	color := `Color yellow`.
-	radius := 100.
-	self morphExtent: self morphExtent.
+	
+	diameter := 200.
+	self morphExtent: diameter @ diameter.
+	radius := diameter / 2.
 	'Move mouse over the circle and press r, g, or b to change its color.' print.! !
 
 !KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:41:00'!
@@ -555,13 +583,6 @@ keyStroke: aKeyEvent
 		[ $b ] -> [ `Color blue` ].
 	}.
 	self redrawNeeded.! !
-
-!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:24:10'!
-morphExtent
-	| diameter |
-	
-	diameter := radius * 2.
-	^ diameter @ diameter. ! !
 
 !KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:34:18'!
 mouseEnter: event
@@ -742,7 +763,7 @@ thumbColor: aColor
 	
 	thumbColor := aColor! !
 
-!SwitchMorf methodsFor: 'drawing' stamp: 'RMV 2/22/2025 16:55:13'!
+!SwitchMorf methodsFor: 'drawing' stamp: 'RMV 3/5/2025 16:43:13'!
 drawOn: aCanvas
 	| diameter hoverColor rect strokeColor strokeWidth width |
 		
@@ -755,7 +776,7 @@ drawOn: aCanvas
 	width := diameter * 1.75.
 	rect := Rectangle origin: 0 @ 0 extent: width @ diameter.
 	aCanvas strokeWidth: strokeWidth color: strokeColor fillColor: Color white do: [
-		aCanvas drawOval: rect strokeWidth: strokeWidth.
+		aCanvas stadium: rect
 	].
 
 	self drawThumbOn: aCanvas.
@@ -1741,6 +1762,11 @@ open
 	extent := instance minimumExtent.
 	instance morphExtent: 300 @ extent y.! !
 
+!Morph methodsFor: '*Morf' stamp: 'RMV 3/11/2025 09:13:30'!
+writeJPEG: aFilePath
+	
+	self imageForm: 32 :: writeJPEGfileNamed: aFilePath! !
+
 !TextModelMorph class methodsFor: '*Morf' stamp: 'RMV 2/22/2025 14:48:00'!
 singleLineWithText: aTextOrString
 
@@ -1766,53 +1792,6 @@ singleLineWithText: aTextOrString placeholder: phString width: aNumber
 	instance layoutSpec proportionalHeight: 0.
 		
 	^ instance.! !
-
-!AbstractVectorCanvas methodsFor: '*Morf' stamp: 'RMV 2/22/2025 16:58:25'!
-drawOval: aRect strokeWidth: aStrokeWidth
-	| diameter halfStrokeWidth height p1 p2 p3 p4
-	  radius strokeWidth width x1 x2 y1 y2 |
-		
-	width := aRect width.
-	height := aRect height.
-	
-	"TODO: Why does this give the wrong value?"
-	"strokeWidth := engine strokeWidth."
-	strokeWidth := aStrokeWidth.
-	halfStrokeWidth := strokeWidth / 2.
-	diameter := (height min: width) - strokeWidth.
-	radius := diameter / 2.
-	
-	height < width
-		ifTrue: [
-			x1 := halfStrokeWidth + radius.
-			x2 := width - x1.
-			y1 := halfStrokeWidth.
-			y2 := height - y1.
-			p1 := x1 @ y1.
-			p2 := x2 @ y1.
-			p3 := x2 @ y2.
-			p4 := x1 @ y2.
-		]
-		ifFalse: [
-			x1 := halfStrokeWidth.
-			y1 := halfStrokeWidth + radius.
-			x2 := width - x1.
-			y2 := height - y1.
-			p1 := x1 @ y2.
-			p2 := x1 @ y1.
-			p3 := x2 @ y1.
-			p4 := x2 @ y2.
-		].
-		
-		self
-			moveTo: p1;
-			lineTo: p2;
-			arcTo: p3 radius: radius angleOfXAxis: 0 largeFlag: false sweepFlag: true;
-			lineTo: p4;
-			arcTo: p1 radius: radius angleOfXAxis: 0 largeFlag: false sweepFlag: true.
-
-		
-! !
 
 !VectorEngine methodsFor: '*Morf' stamp: 'RMV 2/22/2025 12:47:10'!
 strokeWidth
