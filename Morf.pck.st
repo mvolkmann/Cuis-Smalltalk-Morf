@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7067] on 12 March 2025 at 3:08:12 pm'!
+'From Cuis7.3 [latest update: #7067] on 13 March 2025 at 8:39:56 am'!
 'Description '!
-!provides: 'Morf' 1 75!
+!provides: 'Morf' 1 76!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -496,6 +496,19 @@ requiresVectorCanvas
 	
 	^ true! !
 
+!ClickDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:48:55'!
+example
+	| morph |
+	
+	morph := self new.
+	morph openInWorld.
+
+	morph writeJPEG: self path, '/ch05-userinteraction-example1.jpg'.! !
+
+!ClickDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:38:14'!
+path
+	^​ '/Users/volkmannm/Documents/dev/lang/smalltalk/Cuis-Booklets/designGUI/chapter-05/img'! !
+
 !HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:17:41'!
 drawOn: aCanvas
 
@@ -541,6 +554,19 @@ requiresVectorCanvas
 	
 	^ true! !
 
+!HoverDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:49:07'!
+example
+	| morph |
+	
+	morph := self new.
+	morph openInWorld.
+
+	morph writeJPEG: self path, '/ch05-userinteraction-example2.jpg'.! !
+
+!HoverDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:48:34'!
+path
+	^​ '/Users/volkmannm/Documents/dev/lang/smalltalk/Cuis-Booklets/designGUI/chapter-05/img'! !
+
 !KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:24:10'!
 drawOn: aCanvas
 
@@ -550,9 +576,9 @@ drawOn: aCanvas
 			radius: radius
 	].! !
 
-!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/25/2025 19:51:22'!
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 08:07:15'!
 handlesKeyboard
-	
+	"Handle keyboard events only if this morph is visible."
 	^ self visible! !
 
 !KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/25/2025 19:50:32'!
@@ -584,11 +610,14 @@ keyStroke: aKeyEvent
 	}.
 	self redrawNeeded.! !
 
-!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:34:18'!
+!KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 08:06:20'!
 mouseEnter: event
 	
 	super mouseEnter: event.
 	
+	"If the user opted for focus to automatically
+	 move focus to the morph under the cursor then tell
+	 the cursor (event hand) to give focus to this morph."
 	Preferences at: #focusFollowsMouse :: ifTrue: [
 		event hand newKeyboardFocus: self
 	].! !
@@ -597,6 +626,19 @@ mouseEnter: event
 requiresVectorCanvas
 	
 	^ true! !
+
+!KeyDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:57:10'!
+example
+	| morph |
+	
+	morph := self new.
+	morph openInWorld.
+
+	morph writeJPEG: self path, '/ch05-userinteraction-example3.jpg'.! !
+
+!KeyDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:57:25'!
+path
+	^​ '/Users/volkmannm/Documents/dev/lang/smalltalk/Cuis-Booklets/designGUI/chapter-05/img'! !
 
 !RadioButtonMorf methodsFor: 'accessing' stamp: 'RMV 2/11/2025 18:34:11'!
 selected
