@@ -1,6 +1,7 @@
-'From Cuis7.3 [latest update: #7067] on 13 March 2025 at 8:39:56 am'!
+'From Cuis7.3 [latest update: #7068] on 13 March 2025 at 11:12:23 am'!
 'Description '!
-!provides: 'Morf' 1 76!
+!provides: 'Morf' 1 77!
+!requires: 'Graphics-Files-Additional' 1 30 nil!
 SystemOrganization addCategory: 'Morf'!
 
 
@@ -1808,6 +1809,11 @@ open
 writeJPEG: aFilePath
 	
 	self imageForm: 32 :: writeJPEGfileNamed: aFilePath! !
+
+!Morph methodsFor: '*Morf' stamp: 'RMV 3/13/2025 11:10:53'!
+writePNG: aFilePath
+	
+	self imageForm: 32 :: writePNGfileNamed: aFilePath! !
 
 !TextModelMorph class methodsFor: '*Morf' stamp: 'RMV 2/22/2025 14:48:00'!
 singleLineWithText: aTextOrString
