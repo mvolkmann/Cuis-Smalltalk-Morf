@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7068] on 13 March 2025 at 11:12:23 am'!
+'From Cuis7.3 [latest update: #7081] on 19 March 2025 at 12:34:51 pm'!
 'Description '!
-!provides: 'Morf' 1 77!
+!provides: 'Morf' 1 78!
 !requires: 'Graphics-Files-Additional' 1 30 nil!
 SystemOrganization addCategory: 'Morf'!
 
@@ -497,18 +497,18 @@ requiresVectorCanvas
 	
 	^ true! !
 
-!ClickDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:48:55'!
+!ClickDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 11:24:42'!
 example
 	| morph |
 	
 	morph := self new.
 	morph openInWorld.
 
-	morph writeJPEG: self path, '/ch05-userinteraction-example1.jpg'.! !
+	morph writePNG: self path, 'ch05-userinteraction-example1.png'.! !
 
-!ClickDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:38:14'!
+!ClickDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 11:24:33'!
 path
-	^​ '/Users/volkmannm/Documents/dev/lang/smalltalk/Cuis-Booklets/designGUI/chapter-05/img'! !
+	^​ '/Users/volkmannm/Documents/dev/lang/smalltalk/Cuis-Booklets/designGUI/chapter-05/img/'! !
 
 !HoverDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:17:41'!
 drawOn: aCanvas
@@ -555,18 +555,18 @@ requiresVectorCanvas
 	
 	^ true! !
 
-!HoverDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:49:07'!
+!HoverDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 11:24:52'!
 example
 	| morph |
 	
 	morph := self new.
 	morph openInWorld.
 
-	morph writeJPEG: self path, '/ch05-userinteraction-example2.jpg'.! !
+	morph writePNG: self path, 'ch05-userinteraction-example2.png'.! !
 
-!HoverDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:48:34'!
+!HoverDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 11:24:55'!
 path
-	^​ '/Users/volkmannm/Documents/dev/lang/smalltalk/Cuis-Booklets/designGUI/chapter-05/img'! !
+	^​ '/Users/volkmannm/Documents/dev/lang/smalltalk/Cuis-Booklets/designGUI/chapter-05/img/'! !
 
 !KeyDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/22/2025 18:24:10'!
 drawOn: aCanvas
@@ -628,18 +628,19 @@ requiresVectorCanvas
 	
 	^ true! !
 
-!KeyDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:57:10'!
+!KeyDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/19/2025 11:29:58'!
 example
 	| morph |
 	
 	morph := self new.
 	morph openInWorld.
+	self halt.
 
-	morph writeJPEG: self path, '/ch05-userinteraction-example3.jpg'.! !
+	morph writePNG: self path, 'ch05-userinteraction-example3.png'.! !
 
-!KeyDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 07:57:25'!
+!KeyDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 3/13/2025 11:25:03'!
 path
-	^​ '/Users/volkmannm/Documents/dev/lang/smalltalk/Cuis-Booklets/designGUI/chapter-05/img'! !
+	^​ '/Users/volkmannm/Documents/dev/lang/smalltalk/Cuis-Booklets/designGUI/chapter-05/img/'! !
 
 !RadioButtonMorf methodsFor: 'accessing' stamp: 'RMV 2/11/2025 18:34:11'!
 selected
