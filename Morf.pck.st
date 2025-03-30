@@ -1,13 +1,13 @@
-'From Cuis7.3 [latest update: #7092] on 30 March 2025 at 11:34:37 am'!
+'From Cuis7.3 [latest update: #7092] on 30 March 2025 at 1:22:55 pm'!
 'Description '!
-!provides: 'Morf' 1 81!
+!provides: 'Morf' 1 84!
 !requires: 'Graphics-Files-Additional' 1 30 nil!
 SystemOrganization addCategory: #Morf!
 
 
 !classDefinition: #BarChart category: #Morf!
 BoxMorph subclass: #BarChart
-	instanceVariableNames: 'backgroundColor labels values colors'
+	instanceVariableNames: 'backgroundColor labels values colors valueAxisIncrement'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
@@ -271,9 +271,11 @@ backgroundColor: aColor
 
 	backgroundColor := aColor! !
 
-!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 11:34:04'!
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 13:22:51'!
 drawOn: aCanvas
-	| barHeight barWidth count font gap indent maxBarHeight maxLabelWidth maxValue origin rect x y |
+	| barHeight barWidth count font fontHeight gap indent
+	  maxBarHeight maxLabelWidth maxValue
+	  origin rect valueLabel valueLabelDelta valueLabelWidth valueLabelY x y |
 			
 	"super drawOn: aCanvas."
 	aCanvas
@@ -283,17 +285,28 @@ drawOn: aCanvas
 	font := FontFamily defaultFamilyAndPointSize.
 
 	"Compute the width to use for each bar."
+	valueLabelWidth := 30.
 	count := labels size.
 	gap := 30.
-	barWidth := extent x - (count + 1 * gap) / count.
+	barWidth := extent x - valueLabelWidth - (count + 2 * gap) / count.
 	maxLabelWidth :=  labels inject: 0 into: [ :acc :label | acc max: (font widthOfString: label) ].
 	barWidth := barWidth max: maxLabelWidth.
 
-	maxBarHeight := extent y - (3 * gap) - font pointSize.
+	fontHeight := font pointSize.
+	maxBarHeight := extent y - (3 * gap) - fontHeight.
 	maxValue :=  values fold: [ :acc :value | acc max: value ].
-	x := gap.
+	x := gap + valueLabelWidth + gap.
 	y := extent y - gap.
 	
+	valueLabelY := gap + maxBarHeight + (fontHeight / 2).
+	valueLabelDelta := maxBarHeight / (maxValue / valueAxisIncrement).
+	valueLabel := 0.
+	[valueLabel <= maxValue] whileTrue: [
+		self drawString: valueLabel asString on: aCanvas at: gap @ valueLabelY.
+		valueLabelY := valueLabelY - valueLabelDelta.
+		valueLabel := valueLabel + valueAxisIncrement.
+	].
+		
 	labels withIndexDo: [ :label :index |
 		| color value |
 		color := colors at: index.
@@ -302,13 +315,7 @@ drawOn: aCanvas
 		"Render a label centered below its bar."
 		indent := barWidth - (font widthOfString: label) / 2.
 		origin := x + indent @ y.
-		aCanvas
-			drawString: label
-			from: 1
-			to: label size
-			atBaseline: origin
-			font: font
-			color: Color black.
+		self drawString: label on: aCanvas at: origin.
 		
 		"Render a bar above the its label."
 		barHeight := maxBarHeight * value / maxValue.
@@ -320,7 +327,19 @@ drawOn: aCanvas
 	].
 ! !
 
-!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 11:33:48'!
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 13:00:29'!
+drawString: aString on: aCanvas at: aPoint
+	
+	aCanvas
+		drawString: aString
+		from: 1
+		to: aString size
+		atBaseline: aPoint
+		font: FontFamily defaultFamilyAndPointSize
+		color: Color black.
+! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 13:21:44'!
 initialize
 	
 	super initialize.
@@ -330,7 +349,7 @@ initialize
 	labels := OrderedCollection new.
 	values := OrderedCollection new.
 	colors := OrderedCollection new.
-	
+	valueAxisIncrement := 100.	
 	
 ! !
 
