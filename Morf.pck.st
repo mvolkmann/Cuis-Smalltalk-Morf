@@ -1,197 +1,207 @@
-'From Cuis7.3 [latest update: #7081] on 19 March 2025 at 12:34:51 pm'!
+'From Cuis7.3 [latest update: #7092] on 30 March 2025 at 11:34:37 am'!
 'Description '!
-!provides: 'Morf' 1 78!
+!provides: 'Morf' 1 81!
 !requires: 'Graphics-Files-Additional' 1 30 nil!
-SystemOrganization addCategory: 'Morf'!
+SystemOrganization addCategory: #Morf!
 
 
-!classDefinition: #CanvasDemo category: 'Morf'!
+!classDefinition: #BarChart category: #Morf!
+BoxMorph subclass: #BarChart
+	instanceVariableNames: 'backgroundColor labels values colors'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Morf'!
+!classDefinition: 'BarChart class' category: #Morf!
+BarChart class
+	instanceVariableNames: 'backgroundColor aColor'!
+
+!classDefinition: #CanvasDemo category: #Morf!
 BoxMorph subclass: #CanvasDemo
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'CanvasDemo class' category: 'Morf'!
+!classDefinition: 'CanvasDemo class' category: #Morf!
 CanvasDemo class
 	instanceVariableNames: ''!
 
-!classDefinition: #CheckboxMorf category: 'Morf'!
+!classDefinition: #CheckboxMorf category: #Morf!
 BoxMorph subclass: #CheckboxMorf
 	instanceVariableNames: 'borderColor checked fillColor font height hovered label onChange separation value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'CheckboxMorf class' category: 'Morf'!
+!classDefinition: 'CheckboxMorf class' category: #Morf!
 CheckboxMorf class
 	instanceVariableNames: ''!
 
-!classDefinition: #CircleDemo category: 'Morf'!
+!classDefinition: #CircleDemo category: #Morf!
 BoxMorph subclass: #CircleDemo
 	instanceVariableNames: 'radius'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'CircleDemo class' category: 'Morf'!
+!classDefinition: 'CircleDemo class' category: #Morf!
 CircleDemo class
 	instanceVariableNames: ''!
 
-!classDefinition: #ClickDemo category: 'Morf'!
+!classDefinition: #ClickDemo category: #Morf!
 BoxMorph subclass: #ClickDemo
 	instanceVariableNames: 'color offColor onColor radius'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'ClickDemo class' category: 'Morf'!
+!classDefinition: 'ClickDemo class' category: #Morf!
 ClickDemo class
 	instanceVariableNames: ''!
 
-!classDefinition: #HoverDemo category: 'Morf'!
+!classDefinition: #HoverDemo category: #Morf!
 BoxMorph subclass: #HoverDemo
 	instanceVariableNames: 'color offColor onColor radius'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'HoverDemo class' category: 'Morf'!
+!classDefinition: 'HoverDemo class' category: #Morf!
 HoverDemo class
 	instanceVariableNames: ''!
 
-!classDefinition: #KeyDemo category: 'Morf'!
+!classDefinition: #KeyDemo category: #Morf!
 BoxMorph subclass: #KeyDemo
 	instanceVariableNames: 'color radius'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'KeyDemo class' category: 'Morf'!
+!classDefinition: 'KeyDemo class' category: #Morf!
 KeyDemo class
 	instanceVariableNames: ''!
 
-!classDefinition: #RadioButtonMorf category: 'Morf'!
+!classDefinition: #RadioButtonMorf category: #Morf!
 BoxMorph subclass: #RadioButtonMorf
 	instanceVariableNames: 'borderColor fillColor font height hovered label onChange selected separation value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'RadioButtonMorf class' category: 'Morf'!
+!classDefinition: 'RadioButtonMorf class' category: #Morf!
 RadioButtonMorf class
 	instanceVariableNames: ''!
 
-!classDefinition: #SwitchMorf category: 'Morf'!
+!classDefinition: #SwitchMorf category: #Morf!
 BoxMorph subclass: #SwitchMorf
 	instanceVariableNames: 'borderColor checked fillColor font gap height hovered label onChange thumbColor thumbPercent value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'SwitchMorf class' category: 'Morf'!
+!classDefinition: 'SwitchMorf class' category: #Morf!
 SwitchMorf class
 	instanceVariableNames: ''!
 
-!classDefinition: #SpacerMorf category: 'Morf'!
+!classDefinition: #SpacerMorf category: #Morf!
 ColoredBoxMorph subclass: #SpacerMorf
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'SpacerMorf class' category: 'Morf'!
+!classDefinition: 'SpacerMorf class' category: #Morf!
 SpacerMorf class
 	instanceVariableNames: ''!
 
-!classDefinition: #ButtonMorf category: 'Morf'!
+!classDefinition: #ButtonMorf category: #Morf!
 BorderedBoxMorph subclass: #ButtonMorf
 	instanceVariableNames: 'fillColor font hoverColor hovered label onClick textColor'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'ButtonMorf class' category: 'Morf'!
+!classDefinition: 'ButtonMorf class' category: #Morf!
 ButtonMorf class
 	instanceVariableNames: 'label onClick'!
 
-!classDefinition: #EditableLabelMorf category: 'Morf'!
+!classDefinition: #EditableLabelMorf category: #Morf!
 LayoutMorph subclass: #EditableLabelMorf
 	instanceVariableNames: 'label textInput'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'EditableLabelMorf class' category: 'Morf'!
+!classDefinition: 'EditableLabelMorf class' category: #Morf!
 EditableLabelMorf class
 	instanceVariableNames: ''!
 
-!classDefinition: #HelloWorld category: 'Morf'!
+!classDefinition: #HelloWorld category: #Morf!
 LayoutMorph subclass: #HelloWorld
 	instanceVariableNames: 'greetingLabel input'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'HelloWorld class' category: 'Morf'!
+!classDefinition: 'HelloWorld class' category: #Morf!
 HelloWorld class
 	instanceVariableNames: ''!
 
-!classDefinition: #RadioButtonGroupMorf category: 'Morf'!
+!classDefinition: #RadioButtonGroupMorf category: #Morf!
 LayoutMorph subclass: #RadioButtonGroupMorf
 	instanceVariableNames: 'labelArray onChange valueArray'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'RadioButtonGroupMorf class' category: 'Morf'!
+!classDefinition: 'RadioButtonGroupMorf class' category: #Morf!
 RadioButtonGroupMorf class
 	instanceVariableNames: 'labelArray valueArray'!
 
-!classDefinition: #TextInputMorf category: 'Morf'!
+!classDefinition: #TextInputMorf category: #Morf!
 LayoutMorph subclass: #TextInputMorf
 	instanceVariableNames: 'inputWidth label labelMorph textModelMorph'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'TextInputMorf class' category: 'Morf'!
+!classDefinition: 'TextInputMorf class' category: #Morf!
 TextInputMorf class
 	instanceVariableNames: 'model'!
 
-!classDefinition: #Todo category: 'Morf'!
+!classDefinition: #Todo category: #Morf!
 LayoutMorph subclass: #Todo
 	instanceVariableNames: 'checkbox label labelFont onDelete onDoneToggle'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'Todo class' category: 'Morf'!
+!classDefinition: 'Todo class' category: #Morf!
 Todo class
 	instanceVariableNames: ''!
 
-!classDefinition: #TodosPane category: 'Morf'!
+!classDefinition: #TodosPane category: #Morf!
 LayoutMorph subclass: #TodosPane
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'TodosPane class' category: 'Morf'!
+!classDefinition: 'TodosPane class' category: #Morf!
 TodosPane class
 	instanceVariableNames: ''!
 
-!classDefinition: #TextModelMorf category: 'Morf'!
+!classDefinition: #TextModelMorf category: #Morf!
 TextModelMorph subclass: #TextModelMorf
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'TextModelMorf class' category: 'Morf'!
+!classDefinition: 'TextModelMorf class' category: #Morf!
 TextModelMorf class
 	instanceVariableNames: ''!
 
-!classDefinition: #Greeter category: 'Morf'!
+!classDefinition: #Greeter category: #Morf!
 SystemWindow subclass: #Greeter
 	instanceVariableNames: 'selectedColor'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'Greeter class' category: 'Morf'!
+!classDefinition: 'Greeter class' category: #Morf!
 Greeter class
 	instanceVariableNames: ''!
 
-!classDefinition: #TodoApp category: 'Morf'!
+!classDefinition: #TodoApp category: #Morf!
 SystemWindow subclass: #TodoApp
 	instanceVariableNames: 'scrollPane statusLabel todoInput todos todosPane window titleLabelx'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
-!classDefinition: 'TodoApp class' category: 'Morf'!
+!classDefinition: 'TodoApp class' category: #Morf!
 TodoApp class
 	instanceVariableNames: ''!
 
@@ -243,6 +253,91 @@ This class wouldn't be needed if instances of TextModelMorph could be configured
 !TodoApp commentStamp: 'RMV 8/18/2024 14:45:24' prior: 0!
 This is a basic todo application.
 It was created as an exercise for learning about Morphic.!
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 11:24:58'!
+addBar: labelString value: aNumber
+
+	self addBar: labelString value: aNumber color: Color black! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 11:25:03'!
+addBar: labelString value: aNumber color: aColor
+	
+	labels add: labelString.
+	values add: aNumber.
+	colors add: aColor.! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 11:33:31'!
+backgroundColor: aColor
+
+	backgroundColor := aColor! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 11:34:04'!
+drawOn: aCanvas
+	| barHeight barWidth count font gap indent maxBarHeight maxLabelWidth maxValue origin rect x y |
+			
+	"super drawOn: aCanvas."
+	aCanvas
+		fillRectangle: self localBounds
+		color: backgroundColor.
+
+	font := FontFamily defaultFamilyAndPointSize.
+
+	"Compute the width to use for each bar."
+	count := labels size.
+	gap := 30.
+	barWidth := extent x - (count + 1 * gap) / count.
+	maxLabelWidth :=  labels inject: 0 into: [ :acc :label | acc max: (font widthOfString: label) ].
+	barWidth := barWidth max: maxLabelWidth.
+
+	maxBarHeight := extent y - (3 * gap) - font pointSize.
+	maxValue :=  values fold: [ :acc :value | acc max: value ].
+	x := gap.
+	y := extent y - gap.
+	
+	labels withIndexDo: [ :label :index |
+		| color value |
+		color := colors at: index.
+		value := values at: index.
+		
+		"Render a label centered below its bar."
+		indent := barWidth - (font widthOfString: label) / 2.
+		origin := x + indent @ y.
+		aCanvas
+			drawString: label
+			from: 1
+			to: label size
+			atBaseline: origin
+			font: font
+			color: Color black.
+		
+		"Render a bar above the its label."
+		barHeight := maxBarHeight * value / maxValue.
+		origin := x @ (gap + maxBarHeight - barHeight).
+		rect := Rectangle origin: origin extent: barWidth @ barHeight.
+		aCanvas fillRectangle: rect color: color.
+		
+		x := x + gap + barWidth.
+	].
+! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 11:33:48'!
+initialize
+	
+	super initialize.
+	self morphExtent: 400 @ 600.
+	
+	backgroundColor := Color transparent.
+	labels := OrderedCollection new.
+	values := OrderedCollection new.
+	colors := OrderedCollection new.
+	
+	
+! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 10:17:29'!
+requiresVectorCanvas
+
+	^ true! !
 
 !CanvasDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/11/2025 09:14:04'!
 drawOn: aCanvas
