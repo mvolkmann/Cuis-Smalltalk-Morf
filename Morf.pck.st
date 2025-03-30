@@ -1,13 +1,13 @@
-'From Cuis7.3 [latest update: #7092] on 30 March 2025 at 1:22:55 pm'!
+'From Cuis7.3 [latest update: #7092] on 30 March 2025 at 3:00:35 pm'!
 'Description '!
-!provides: 'Morf' 1 84!
+!provides: 'Morf' 1 94!
 !requires: 'Graphics-Files-Additional' 1 30 nil!
 SystemOrganization addCategory: #Morf!
 
 
 !classDefinition: #BarChart category: #Morf!
 BoxMorph subclass: #BarChart
-	instanceVariableNames: 'backgroundColor labels values colors valueAxisIncrement'
+	instanceVariableNames: 'backgroundColor colors dirty font fontHeightX gap labels maxBarHeight maxValue valueAxisIncrement valueLabelDelta valueLabelWidth values barWidth'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Morf'!
@@ -259,72 +259,37 @@ addBar: labelString value: aNumber
 
 	self addBar: labelString value: aNumber color: Color black! !
 
-!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 11:25:03'!
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 14:35:44'!
 addBar: labelString value: aNumber color: aColor
 	
 	labels add: labelString.
 	values add: aNumber.
-	colors add: aColor.! !
+	colors add: aColor.
+	dirty := true.
+	self redrawNeeded.! !
 
-!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 11:33:31'!
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 14:52:38'!
 backgroundColor: aColor
 
-	backgroundColor := aColor! !
+	backgroundColor := aColor.
+	self redrawNeeded.! !
 
-!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 13:22:51'!
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 14:46:46'!
+drawBackgroundOn: aCanvas
+
+	aCanvas fillRectangle: self localBounds color: backgroundColor.
+! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 14:50:46'!
 drawOn: aCanvas
-	| barHeight barWidth count font fontHeight gap indent
-	  maxBarHeight maxLabelWidth maxValue
-	  origin rect valueLabel valueLabelDelta valueLabelWidth valueLabelY x y |
+	dirty ifTrue: [
+		"Set instance variables used by other methods."
+		self update
+	].
 			
-	"super drawOn: aCanvas."
-	aCanvas
-		fillRectangle: self localBounds
-		color: backgroundColor.
-
-	font := FontFamily defaultFamilyAndPointSize.
-
-	"Compute the width to use for each bar."
-	valueLabelWidth := 30.
-	count := labels size.
-	gap := 30.
-	barWidth := extent x - valueLabelWidth - (count + 2 * gap) / count.
-	maxLabelWidth :=  labels inject: 0 into: [ :acc :label | acc max: (font widthOfString: label) ].
-	barWidth := barWidth max: maxLabelWidth.
-
-	fontHeight := font pointSize.
-	maxBarHeight := extent y - (3 * gap) - fontHeight.
-	maxValue :=  values fold: [ :acc :value | acc max: value ].
-	x := gap + valueLabelWidth + gap.
-	y := extent y - gap.
-	
-	valueLabelY := gap + maxBarHeight + (fontHeight / 2).
-	valueLabelDelta := maxBarHeight / (maxValue / valueAxisIncrement).
-	valueLabel := 0.
-	[valueLabel <= maxValue] whileTrue: [
-		self drawString: valueLabel asString on: aCanvas at: gap @ valueLabelY.
-		valueLabelY := valueLabelY - valueLabelDelta.
-		valueLabel := valueLabel + valueAxisIncrement.
-	].
-		
-	labels withIndexDo: [ :label :index |
-		| color value |
-		color := colors at: index.
-		value := values at: index.
-		
-		"Render a label centered below its bar."
-		indent := barWidth - (font widthOfString: label) / 2.
-		origin := x + indent @ y.
-		self drawString: label on: aCanvas at: origin.
-		
-		"Render a bar above the its label."
-		barHeight := maxBarHeight * value / maxValue.
-		origin := x @ (gap + maxBarHeight - barHeight).
-		rect := Rectangle origin: origin extent: barWidth @ barHeight.
-		aCanvas fillRectangle: rect color: color.
-		
-		x := x + gap + barWidth.
-	].
+	self drawBackgroundOn: aCanvas.
+	self drawYAxisLabelsOn: aCanvas.
+	self drawXAxisLabelsOn: aCanvas.
 ! !
 
 !BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 13:00:29'!
@@ -339,17 +304,72 @@ drawString: aString on: aCanvas at: aPoint
 		color: Color black.
 ! !
 
-!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 13:21:44'!
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 14:49:56'!
+drawXAxisLabelsOn: aCanvas
+	| barHeight color indent origin rect value x y|
+
+	x := gap + valueLabelWidth + gap.
+	y := extent y - gap.
+	labels withIndexDo: [ :aLabel :index |
+		color := colors at: index.
+		value := values at: index.
+		
+		"Draw x-axis label centered below its bar."
+		indent := barWidth - (font widthOfString: aLabel) / 2.
+		origin := x + indent @ y.
+		self drawString: aLabel on: aCanvas at: origin.
+		
+		"Draw bar above the its x-axis label."
+		barHeight := maxBarHeight * value / maxValue.
+		origin := x @ (gap + maxBarHeight - barHeight).
+		rect := Rectangle origin: origin extent: barWidth @ barHeight.
+		aCanvas fillRectangle: rect color: color.
+		
+		x := x + gap + barWidth.
+	].
+! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 14:46:03'!
+drawYAxisLabelsOn: aCanvas
+	| label value valueLabelY x |
+			
+	"Draw y-axis labels."
+	valueLabelY := gap + maxBarHeight + (fontHeightX / 2).
+	value := 0.
+	[value <= maxValue] whileTrue: [
+		"Compute x to right-align this y-axis label."	
+		label := value asString.
+		x := gap + valueLabelWidth - (font widthOfString: label).
+		
+		self drawString: label on: aCanvas at: x @ valueLabelY.
+		
+		"Prepare for next y-axis label."
+		valueLabelY := valueLabelY - valueLabelDelta.
+		value := value + valueAxisIncrement.
+	].! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 14:51:40'!
+gap: aNumber
+
+	gap := aNumber.
+	dirty := true.
+	self redrawNeeded.! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 14:34:25'!
 initialize
 	
 	super initialize.
 	self morphExtent: 400 @ 600.
 	
 	backgroundColor := Color transparent.
+	dirty := true.
+	font := FontFamily defaultFamilyAndPointSize.
+	gap := 20.
+	valueAxisIncrement := 100.	
+	
 	labels := OrderedCollection new.
 	values := OrderedCollection new.
 	colors := OrderedCollection new.
-	valueAxisIncrement := 100.	
 	
 ! !
 
@@ -357,6 +377,42 @@ initialize
 requiresVectorCanvas
 
 	^ true! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 14:59:28'!
+update
+	"Set instance variables used by other methods.
+	 Call every time a bar is added to recompute."
+	| chartWidth count gaps maxLabelWidth |
+	
+	"Compute instance variables needed to draw y-axis labels."
+	fontHeightX := font pointSize.
+	maxBarHeight := extent y - (3 * gap) - fontHeightX.
+	maxValue :=  values fold: [ :acc :v | acc max: v ].
+	valueLabelDelta := maxBarHeight / (maxValue / valueAxisIncrement).
+	valueLabelWidth := font widthOfString: maxValue asString.
+		
+	"Compute width to use for each bar."
+	count := labels size.
+	gaps := count + 2 * gap.
+	barWidth := (extent x - valueLabelWidth - gaps) / count.
+	
+	"Adjust the bar width to be at least as wide as the widest label."
+	maxLabelWidth := labels
+		inject: 0
+		into: [ :acc :aLabel | acc max: (font widthOfString: aLabel) ].
+	maxLabelWidth > barWidth ifTrue: [
+		barWidth := maxLabelWidth.
+		chartWidth := valueLabelWidth + (count * barWidth) + gaps.
+		self morphExtent: chartWidth @ (self morphExtent y).
+	].
+	
+	dirty := false.
+! !
+
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 13:30:18'!
+valueAxisIncrement: aNumber
+
+	valueAxisIncrement := aNumber! !
 
 !CanvasDemo methodsFor: 'as yet unclassified' stamp: 'RMV 2/11/2025 09:14:04'!
 drawOn: aCanvas
