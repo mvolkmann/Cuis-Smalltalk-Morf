@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7092] on 30 March 2025 at 3:11:31 pm'!
+'From Cuis7.3 [latest update: #7092] on 30 March 2025 at 8:18:54 pm'!
 'Description '!
-!provides: 'Morf' 1 96!
+!provides: 'Morf' 1 97!
 !requires: 'Graphics-Files-Additional' 1 30 nil!
 SystemOrganization addCategory: #Morf!
 
@@ -350,7 +350,7 @@ gap: aNumber
 	dirty := true.
 	self redrawNeeded.! !
 
-!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 15:10:52'!
+!BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 20:16:28'!
 initialize
 	
 	super initialize.
@@ -367,6 +367,9 @@ initialize
 	values := OrderedCollection new.
 	colors := OrderedCollection new.
 	
+	self layoutSpec
+		proportionalHeight: 1;
+		proportionalWidth: 1.
 ! !
 
 !BarChart methodsFor: 'as yet unclassified' stamp: 'rmv 3/30/2025 15:07:21'!
