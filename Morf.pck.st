@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7092] on 1 April 2025 at 9:41:15 am'!
+'From Cuis7.3 [latest update: #7092] on 1 April 2025 at 3:10:10 pm'!
 'Description '!
-!provides: 'Morf' 1 101!
+!provides: 'Morf' 1 102!
 !requires: 'Graphics-Files-Additional' 1 30 nil!
 SystemOrganization addCategory: #Morf!
 
@@ -1701,7 +1701,7 @@ status
 	
 	^ '{1} of {2} remaining' format: {remaining. todos size}.! !
 
-!TodoApp methodsFor: 'initialization' stamp: 'RMV 2/16/2025 18:56:33'!
+!TodoApp methodsFor: 'initialization' stamp: 'rmv 4/1/2025 15:09:37'!
 initialize
 	"Build the user interface."
 	| addRow button column |
@@ -1720,6 +1720,7 @@ initialize
 		gap: 10;
 		addMorph: todoInput;
 		addMorph: button.
+	addRow layoutSpec proportionalHeight: 0.
 	
 	"Build a scrollable list of todos."
 	todosPane := TodosPane new.
@@ -1793,18 +1794,21 @@ updateStatus
 	statusLabel contents: self status
 ! !
 
-!TodoApp class methodsFor: 'instance creation' stamp: 'RMV 2/16/2025 18:48:33'!
+!TodoApp class methodsFor: 'instance creation' stamp: 'rmv 4/1/2025 15:08:30'!
 open
 	"Open a properly sized instance of this class in the World."
 	| extent instance |
 	
 	instance := self new.
-	instance openInWorld.
-			
+				
 	"Size the window to the minimum size that holds the contents.
 	 This must be done AFTER sending #openInWorld!!"
 	extent := instance minimumExtent.
-	instance morphExtent: 300 @ extent y.! !
+	instance
+		morphExtent: 300 @ extent y;
+		openInWorld.
+	
+! !
 
 !Morph methodsFor: '*Morf' stamp: 'RMV 3/11/2025 09:13:30'!
 writeJPEG: aFilePath
